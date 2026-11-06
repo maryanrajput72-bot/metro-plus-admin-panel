@@ -1,7 +1,7 @@
 # Metro + Admin
 
 Admin panel app — **Metro+** staff app ka admin panel, Android app ke andar.
-Naam: **Metro + Admin** · Package: **com.metroplusadmin** · Current version: **1.0.0(02)** (versionCode 2)
+Naam: **Metro + Admin** · Package: **com.metroplusadmin** · Current version: **1.0.0(03)** (versionCode 3)
 
 ## Logo
 
@@ -19,13 +19,23 @@ ko hue-shift karke banaye gaye).
   ek hi code, do jagah. Badlo to dono jagah update karo.
   - `app/src/main/java/com/metroplusadmin/MainActivity.kt` — WebView, panel kholta hai.
   - `app/src/main/java/com/metroplusadmin/UpdateCheck.kt` — app open pe 5 second
-    baad `version.json` check karta hai; naya version ho to Download dialog.
-  - `app/src/main/java/com/metroplusadmin/UpdateInstallReceiver.kt` — download
-    mukammal hote hi install prompt kholta hai.
+    baad `version.json` check karta hai; naya version ho to Metro+ jaisa SILENT
+    auto-update (PackageInstaller session; receiver isi file ke andar hai).
+  - `app/src/main/java/com/metroplusadmin/AdminApp.kt` — crash catcher: crash ho
+    to agli open pe wajah dikhata hai.
+  - `app/src/main/java/com/metroplusadmin/LoginActivity.kt` — lock screen.
+  - `app/src/main/java/com/metroplusadmin/Auth.kt` — naam + password hash check.
 - `version.json` — updater manifest: versionCode, versionName, apkUrl (GitHub Release).
 - `keystore/` + `keystore.properties` — **GitHub par KABHI nahi** (`.gitignore`).
   Sirf is machine par. Ye key Metro+ staff app wali key se ALAG hai, taake
   Admin app staff app ke upar install na ho.
+
+## Login-crash fix (v1.0.0(03))
+
+v1.0.0(02) login ke foran baad "has stopped" se band ho jati thi — wajah:
+`BiometricPrompt.authenticate()` ko `USE_BIOMETRIC` permission chahiye hoti hai,
+jo manifest me nahi thi → SecurityException → crash. Fix: permission lagi hai,
+`authenticate()` try/catch me hai, aur `AdminApp` crash catcher lagaya hai.
 
 ## Login — fingerprint + password (v1.0.0(02))
 
