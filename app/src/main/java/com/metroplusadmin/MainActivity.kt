@@ -57,16 +57,69 @@ class MainActivity : Activity() {
         Handler(Looper.getMainLooper()).postDelayed({ runUpdateCheck() }, 5_000L)
     }
 
+    private var updateDialog: android.app.AlertDialog? = null
+    private var updateBar: android.widget.ProgressBar? = null
+    private var updateText: android.widget.TextView? = null
+
+    private fun showUpdateProgress(versionName: String) {
+        val box = android.widget.LinearLayout(this).apply {
+            orientation = android.widget.LinearLayout.VERTICAL
+            setPadding(48, 32, 48, 16)
+        }
+        updateText = android.widget.TextView(this).apply {
+            text = "Update $versionName download ho rahi hai… 0%"
+            textSize = 15f
+        }
+        box.addView(updateText)
+        updateBar = android.widget.ProgressBar(
+            this, null, android.R.attr.progressBarStyleHorizontal
+        ).apply {
+            max = 100
+            progress = 0
+            progressTintList = android.content.res.ColorStateList.valueOf(
+                android.graphics.Color.parseColor("#0F766E")
+            )
+        }
+        box.addView(updateBar, android.widget.LinearLayout.LayoutParams(
+            android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
+            android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
+        ).apply { topMargin = 24 })
+        updateDialog = android.app.AlertDialog.Builder(this)
+            .setTitle("Metro + Admin update")
+            .setView(box)
+            .setCancelable(false)
+            .create()
+        updateDialog?.show()
+    }
+
+    private fun hideUpdateProgress() {
+        try { updateDialog?.dismiss() } catch (_: Exception) { }
+        updateDialog = null
+        updateBar = null
+        updateText = null
+    }
+
+    private fun mb(bytes: Long): String =
+        String.format("%.1f MB", bytes / 1024f / 1024f)
+
     private fun runUpdateCheck() {
         UpdateCheck.checkForUpdate(
             context = this,
             onUpdate = { versionName, apkUrl ->
-                Toast.makeText(this, "Update $versionName download ho raha hai…", Toast.LENGTH_SHORT).show()
+                showUpdateProgress(versionName)
                 UpdateCheck.downloadUpdate(
                     context = this,
                     apkUrl = apkUrl,
-                    onProgress = { _, _, _ -> },
+                    onProgress = { percent, downloaded, total ->
+                        updateBar?.progress = percent
+                        updateText?.text = if (total > 0) {
+                            "Update $versionName download ho rahi hai… $percent% (${mb(downloaded)} / ${mb(total)})"
+                        } else {
+                            "Update $versionName download ho rahi hai… $percent%"
+                        }
+                    },
                     onComplete = { file ->
+                        hideUpdateProgress()
                         if (!UpdateCheck.installUpdateSilent(this, file)) {
                             // Silent na ho sake to installer screen (phir bhi update hogi).
                             if (UpdateCheck.canInstall(this)) {
@@ -82,7 +135,14 @@ class MainActivity : Activity() {
                             }
                         }
                     },
-                    onError = { }
+                    onError = {
+                        hideUpdateProgress()
+                        Toast.makeText(
+                            this,
+                            "Update download nahi hui — net check karke dobara kholo",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
                 )
             }
         )

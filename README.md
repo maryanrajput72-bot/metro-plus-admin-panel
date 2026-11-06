@@ -1,7 +1,7 @@
 # Metro + Admin
 
 Admin panel app — **Metro+** staff app ka admin panel, Android app ke andar.
-Naam: **Metro + Admin** · Package: **com.metroplusadmin** · Current version: **1.0.0(04)** (versionCode 4)
+Naam: **Metro + Admin** · Package: **com.metroplusadmin** · Current version: **1.0.0(05)** (versionCode 5)
 
 ## Logo
 
@@ -29,6 +29,18 @@ ko hue-shift karke banaye gaye).
 - `keystore/` + `keystore.properties` — **GitHub par KABHI nahi** (`.gitignore`).
   Sirf is machine par. Ye key Metro+ staff app wali key se ALAG hai, taake
   Admin app staff app ke upar install na ho.
+
+## Splash 5s + logo adjust + home hero + update progress (v1.0.0(05))
+
+- **Splash 5 second** (pehle ~1.8s tha) — logo + progress bar, phir login.
+- **Logo adjust:** `logo-green.png` ke kaale kone + upar ki laal lakeer hatayi —
+  saaf tile `res/drawable/logo_tile.png` (rounded-rect mask + 4px crop), splash
+  aur login card me seedha tile dikhta hai, white circle nahi.
+- **Home screen fit:** Dashboard ke upar ab EK hero card hai (green gradient) —
+  usi me saara summary: Stations 24, Opening 21/24, Closing 18/24, Attendance
+  118/120. Stations table `overflow-x: auto` wrap me hai taake phone par fit rahe.
+- **Update progress:** update mile to ab dialog dikhta hai — "% + MB" ke saath
+  kitni download hui; fail ho to toast batata hai (pehle kuch nahi dikhta tha).
 
 ## Splash + nayi login + Settings (v1.0.0(04))
 

@@ -101,22 +101,13 @@ class LoginActivity : Activity() {
             setPadding(dp(24), dp(24), dp(24), dp(24))
         }
 
-        // Logo — white circle, green ring, andar green M.
-        val circleWrap = FrameLayout(this)
-        val circle = View(this).apply {
-            background = GradientDrawable().apply {
-                shape = GradientDrawable.OVAL
-                setColor(Color.WHITE)
-                setStroke(dp(4), Color.parseColor("#34D399"))
-            }
-        }
-        circleWrap.addView(circle, FrameLayout.LayoutParams(dp(112), dp(112), Gravity.CENTER))
+        // Logo — saaf tile (kaale kone hataye hue), seedha gradient par,
+        // bilkul beech me. White circle nahi — tile khud hi gol-kone wala hai.
         val logo = ImageView(this).apply {
-            setImageResource(R.mipmap.ic_launcher)
+            setImageResource(R.drawable.logo_tile)
             adjustViewBounds = true
         }
-        circleWrap.addView(logo, FrameLayout.LayoutParams(dp(96), dp(96), Gravity.CENTER))
-        splash.addView(circleWrap, LinearLayout.LayoutParams(dp(112), dp(112)))
+        splash.addView(logo, LinearLayout.LayoutParams(dp(120), dp(120)))
 
         val title = TextView(this).apply {
             text = "Metro + Admin"
@@ -165,7 +156,7 @@ class LoginActivity : Activity() {
             return
         }
         ValueAnimator.ofInt(0, 100).apply {
-            duration = 1800L
+            duration = 5000L
             interpolator = LinearInterpolator()
             addUpdateListener { bar.progress = it.animatedValue as Int }
             addListener(object : android.animation.AnimatorListenerAdapter() {
@@ -222,22 +213,12 @@ class LoginActivity : Activity() {
         root.addView(card, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
 
-        // Logo circle upar.
-        val circleWrap = FrameLayout(this)
-        val circle = View(this).apply {
-            background = GradientDrawable().apply {
-                shape = GradientDrawable.OVAL
-                setColor(Color.WHITE)
-                setStroke(dp(3), Color.parseColor("#34D399"))
-            }
-        }
-        circleWrap.addView(circle, FrameLayout.LayoutParams(dp(88), dp(88), Gravity.CENTER))
+        // Logo tile upar — saaf, beech me.
         val logo = ImageView(this).apply {
-            setImageResource(R.mipmap.ic_launcher)
+            setImageResource(R.drawable.logo_tile)
             adjustViewBounds = true
         }
-        circleWrap.addView(logo, FrameLayout.LayoutParams(dp(76), dp(76), Gravity.CENTER))
-        card.addView(circleWrap, LinearLayout.LayoutParams(dp(88), dp(88)))
+        card.addView(logo, LinearLayout.LayoutParams(dp(88), dp(88)))
 
         val title = TextView(this).apply {
             text = "Metro + Admin"
