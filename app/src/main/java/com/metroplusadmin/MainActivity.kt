@@ -104,6 +104,35 @@ class MainActivity : Activity() {
 
     private var updateRetries = 0
 
+    // Settings se wapas aaye (Install unknown apps on karke) to pending
+    // update ka NATIVE install popup khud khul jaye — dobara check ka intezar nahi.
+    override fun onResume() {
+        super.onResume()
+        val pending = UpdateCheck.pendingInstallFile
+        if (pending != null && pending.exists() && UpdateCheck.canInstall(this)) {
+            UpdateCheck.pendingInstallFile = null
+            Toast.makeText(this, "Install popup khul raha hai…", Toast.LENGTH_SHORT).show()
+            UpdateCheck.startInstall(this, pending)
+        }
+    }
+
+    // "Install unknown apps" off ho to yehi dialog batata hai — khamoshi se
+    // kuch nahi hota (pehle download ke baad yahin sab ruk jata tha).
+    private fun showUnknownSourcesDialog() {
+        android.app.AlertDialog.Builder(this)
+            .setTitle("Install ki permission")
+            .setMessage(
+                "Update download ho gayi hai. Install karne ke liye 'Install unknown apps' " +
+                "on karna hoga — Settings kholo, wahan Metro + Admin ke liye Allow karo, " +
+                "wapas aate hi install popup khud khul jayega."
+            )
+            .setPositiveButton("Settings kholo") { _, _ ->
+                UpdateCheck.openUnknownSourcesSettings(this)
+            }
+            .setNegativeButton("Baad me", null)
+            .show()
+    }
+
     // Settings tab ke "Abhi update check karo" button se bhi yehi chalta hai.
     fun runUpdateCheckNow() {
         runUpdateCheck()
@@ -129,19 +158,17 @@ class MainActivity : Activity() {
                     },
                     onComplete = { file ->
                         hideUpdateProgress()
-                        if (!UpdateCheck.installUpdateSilent(this, file)) {
-                            // Silent na ho sake to installer screen (phir bhi update hogi).
-                            if (UpdateCheck.canInstall(this)) {
-                                UpdateCheck.installUpdate(this, file)
-                            } else {
-                                UpdateCheck.pendingInstallFile = file
-                                Toast.makeText(
-                                    this,
-                                    "Update ke liye 'Install unknown apps' on karo",
-                                    Toast.LENGTH_LONG
-                                ).show()
-                                UpdateCheck.openUnknownSourcesSettings(this)
-                            }
+                        // NATIVE install popup — Android ka apna "Install?" screen.
+                        // Silent rasta hata diya: aam app ko silent install ki
+                        // permission milti hi nahi, is liye download ke baad
+                        // kuch nazar nahi aata tha.
+                        Toast.makeText(
+                            this,
+                            "Download complete — install popup khul raha hai…",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        if (!UpdateCheck.startInstall(this, file)) {
+                            showUnknownSourcesDialog()
                         }
                     },
                     onError = {

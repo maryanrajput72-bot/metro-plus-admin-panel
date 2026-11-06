@@ -223,8 +223,10 @@ object UpdateCheck {
         }
     }
 
-    fun installUpdate(context: Context, file: File) {
-        try {
+    // NATIVE install — Android ka apna installer popup (system "Install?" screen).
+    // Yehi rasta har Android version + har phone par chalta hai. true = popup khula.
+    fun installUpdate(context: Context, file: File): Boolean {
+        return try {
             val uri = FileProvider.getUriForFile(
                 context, "${context.packageName}.fileprovider", file
             )
@@ -234,8 +236,27 @@ object UpdateCheck {
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
             context.startActivity(intent)
+            true
         } catch (_: Exception) {
+            false
         }
+    }
+
+    // Download ke baad install ka ek hi rasta: pehle "Install unknown apps"
+    // check karo — off ho to Settings kholo (wapas aate hi MainActivity.onResume
+    // pending file se install khol dega); on ho to seedha NATIVE install popup.
+    // Silent session rasta ab istemal NAHI hota: UPDATE_PACKAGES_WITHOUT_USER_ACTION
+    // sirf system apps ko milta hai, aam app ko kabhi nahi — is liye silent
+    // koshish hamesha bina popup ke fail hoti thi aur user ko kuch nazar nahi aata tha.
+    fun startInstall(context: Context, file: File): Boolean {
+        if (!file.exists()) return false
+        if (canInstall(context)) {
+            pendingInstallFile = null
+            return installUpdate(context, file)
+        }
+        pendingInstallFile = file
+        openUnknownSourcesSettings(context)
+        return false
     }
 
     fun openUnknownSourcesSettings(context: Context) {
@@ -276,10 +297,22 @@ class UpdateInstallReceiver : BroadcastReceiver() {
                 }
             }
             else -> {
+                // Session fail ho to NATIVE popup rasta — lekin sirf tab jab
+                // "Install unknown apps" on ho; warna pehle Settings, warna
+                // phir se bina kuch dikhaye fail hoga (yehi (04)–(08) ka masla tha).
                 val file = UpdateCheck.pendingInstallFile
                 if (file != null) {
-                    UpdateCheck.pendingInstallFile = null
-                    UpdateCheck.installUpdate(context, file)
+                    if (UpdateCheck.canInstall(context)) {
+                        UpdateCheck.pendingInstallFile = null
+                        UpdateCheck.installUpdate(context, file)
+                    } else {
+                        android.widget.Toast.makeText(
+                            context,
+                            "Update ke liye 'Install unknown apps' on karo",
+                            android.widget.Toast.LENGTH_LONG
+                        ).show()
+                        UpdateCheck.openUnknownSourcesSettings(context)
+                    }
                 }
             }
         }

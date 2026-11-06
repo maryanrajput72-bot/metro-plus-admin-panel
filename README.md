@@ -1,7 +1,7 @@
 # Metro + Admin
 
 Admin panel app — **Metro+** staff app ka admin panel, Android app ke andar.
-Naam: **Metro + Admin** · Package: **com.metroplusadmin** · Current version: **1.0.0(08)** (versionCode 8)
+Naam: **Metro + Admin** · Package: **com.metroplusadmin** · Current version: **1.0.0(09)** (versionCode 9)
 
 ## Logo
 
@@ -12,7 +12,7 @@ ko hue-shift karke banaye gaye).
 
 ## Structure — har file mehfooz hai
 
-- `panel/` — v19 admin panel website (HTML + CSS + JS, `index.html` + `logo-green.png` + `icons/`).
+- `panel/` — v20 admin panel website (HTML + CSS + JS, `index.html` + `logo-green.png` + `icons/`).
   Browser me bhi chalti hai, GitHub Pages par bhi.
 - `app/` — Android app (Kotlin, WebView). Panel app ke andar bundled hai:
   `app/src/main/assets/panel/index.html` — **wahi file jo `panel/` me hai**,
@@ -29,6 +29,33 @@ ko hue-shift karke banaye gaye).
 - `keystore/` + `keystore.properties` — **GitHub par KABHI nahi** (`.gitignore`).
   Sirf is machine par. Ye key Metro+ staff app wali key se ALAG hai, taake
   Admin app staff app ke upar install na ho.
+
+## Native install popup + home redesign (v1.0.0(09))
+
+Zabii ki report: update download ho jati thi, install nahi hoti thi, koi
+popup nahi aata tha. Root cause (code audit):
+- App pehle **silent** PackageInstaller session try karti thi — lekin
+  `UPDATE_PACKAGES_WITHOUT_USER_ACTION` sirf system apps ko milta hai, aam
+  app ko kabhi nahi — is liye silent koshish hamesha bina popup ke fail hoti thi.
+- Code ne kabhi `canInstall()` ("Install unknown apps" — fresh install par
+  default OFF) check nahi kiya, aur har failure path khamoshi se swallow ho
+  jata tha (khaali catch, koi toast/dialog nahi) — download ke baad kuch nazar
+  nahi aata tha. `installInFlight` flag bhi latch ho sakta tha.
+- Fix: download ke baad seedha **NATIVE Android install popup** (ACTION_VIEW +
+  FileProvider). Permission off ho to saaf dialog + Settings khulti hai, wapas
+  aate hi `onResume` pending install ka popup khud khol deta hai. Silent rasta
+  hata diya (function file me hai, istemal nahi hota).
+
+Home redesign (uska order):
+- **Upar wale categories + box cards khatam** — side menu aur gradient hub
+  cards delete. Home par ab saaf **module list** (Staff, TL Access, Data,
+  Versions, Premium Requests) — 3D icon + title + subtitle + chevron.
+- **Tap = naya page** — module right se slide hoke poori screen page kholta
+  hai (back button upar). Band: back button, dock Home, ya **right side se
+  left swipe** (swipe sirf right hisse se shuru ho to — table scroll se takrao nahi).
+- **Neeche dock — 3 cheezein:** Data (left) | Home (darmiyan) | Settings (right),
+  white rounded dock, active pill green. Teesri cheez (Data) meri pasand hai —
+  Zabii bataye to badal dunga.
 
 ## 3D icons + soft reference cards (v1.0.0(08))
 

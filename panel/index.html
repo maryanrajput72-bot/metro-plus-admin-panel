@@ -13,7 +13,7 @@
     --surface: #FFFFFF; --surface2: #F3F4F6;
     --border: #E5E7EB; --bg: #F4F6F8;
   }
-  body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; background: var(--bg); color: var(--ink); font-size: 14px; }
+  body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; background: var(--bg); color: var(--ink); font-size: 14px; padding-bottom: 96px; }
   .wrap { max-width: 980px; margin: 0 auto; padding: 10px; }
   /* Top bar */
   .topbar { background: linear-gradient(135deg, #0F766E 0%, #14B8A6 100%); color: #fff; border-radius: 16px; padding: 16px 18px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
@@ -23,16 +23,34 @@
   .pill { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; white-space: nowrap; }
   .pill.ver { background: rgba(255,255,255,.2); border: 1px solid rgba(255,255,255,.45); color: #fff; }
   .pill.sample { background: #F59E0B; color: #fff; margin-left: auto; }
-  /* Body layout */
-  .body { display: flex; gap: 14px; margin-top: 14px; align-items: flex-start; }
-  .side { width: 190px; flex-shrink: 0; background: linear-gradient(180deg, #0B3D2E, #0F766E); border-radius: 16px; padding: 10px; position: sticky; top: 0; }
-  .side button { display: block; width: 100%; text-align: left; background: transparent; border: 0; color: rgba(255,255,255,.82); font-size: 13.5px; font-weight: 600; padding: 10px 12px; border-radius: 10px; cursor: pointer; margin-bottom: 2px; }
-  .side button:hover { background: rgba(255,255,255,.1); color: #fff; }
-  .side button.active { background: rgba(255,255,255,.18); color: #fff; }
-  .side .cap { color: rgba(255,255,255,.55); font-size: 10.5px; font-weight: 700; letter-spacing: 1.2px; padding: 10px 12px 5px; }
-  .main { flex: 1; min-width: 0; }
+  /* Body layout — upar wala side menu khatam, sirf home + pages + dock. */
+  .body { margin-top: 14px; }
+  .main { min-width: 0; }
   .tab { display: none; }
   .tab.show { display: block; }
+  /* Module page — naya page right se slide hoke aata hai, poori screen. */
+  .tab.page { display: block; position: fixed; inset: 0; z-index: 40; background: var(--bg); overflow-y: auto; padding: 10px 10px 110px; transform: translateX(102%); transition: transform .28s ease; pointer-events: none; }
+  .tab.page.open { transform: translateX(0); pointer-events: auto; }
+  .tab.page > h2 { display: none; }
+  .pagehead { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; position: sticky; top: 0; background: var(--bg); padding: 6px 0 10px; z-index: 2; }
+  .pagehead .back { width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--border); background: #fff; font-size: 22px; line-height: 1; cursor: pointer; color: var(--ink); flex-shrink: 0; }
+  .pagehead .back:active { transform: scale(.94); }
+  .pagehead .pt { font-size: 17px; font-weight: 800; }
+  /* Module list — home par saaf rows, tap = naya page. */
+  .modlist { margin-bottom: 14px; }
+  .modrow { display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 13px 14px; margin-bottom: 10px; cursor: pointer; box-shadow: 0 4px 14px rgba(15,118,110,.08); }
+  .modrow:active { transform: scale(.98); }
+  .modrow img { width: 46px; height: 46px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+  .modrow .mt { flex: 1; min-width: 0; }
+  .modrow .t { font-size: 15px; font-weight: 800; }
+  .modrow .s { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .modrow .chev { font-size: 22px; color: var(--muted); font-weight: 700; flex-shrink: 0; }
+  /* Bottom dock — 3 cheezein: Data | Home | Settings. */
+  .dock { position: fixed; left: 50%; transform: translateX(-50%); bottom: 12px; z-index: 50; width: min(420px, calc(100% - 24px)); background: #fff; border: 1px solid var(--border); border-radius: 22px; box-shadow: 0 10px 30px rgba(15,118,110,.22); display: flex; padding: 8px; gap: 6px; }
+  .dock button { flex: 1; border: 0; background: transparent; cursor: pointer; border-radius: 16px; padding: 7px 4px 6px; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11.5px; font-weight: 700; color: var(--muted); }
+  .dock button img { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; }
+  .dock button.active { background: var(--okBg); color: var(--ok); }
+  .dock button:active { transform: scale(.96); }
   h2 { font-size: 17px; font-weight: 800; margin-bottom: 2px; }
   .sub { color: var(--muted); font-size: 12.5px; margin-bottom: 14px; }
   .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }
@@ -57,25 +75,6 @@
   .alerts::-webkit-scrollbar { display: none; }
   .alert-chip { flex: 0 0 auto; background: var(--warnBg); border: 1px solid #FCD34D; color: #92400E; font-size: 12.5px; font-weight: 700; padding: 9px 13px; border-radius: 20px; cursor: pointer; box-shadow: 0 0 12px rgba(245,158,11,.25); }
   .alert-chip:active { transform: scale(.97); }
-  /* Categories hub — reference wale soft gradient cards jaisa:
-     title + subtitle left, 3D icon halke circle me bottom-right. */
-  .hub { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 14px; }
-  .hub-card { border: 0; border-radius: 20px; padding: 16px; cursor: pointer; position: relative; min-height: 148px; color: #fff; box-shadow: 0 8px 20px rgba(15,118,110,.18); }
-  .hub-card:active { transform: scale(.97); }
-  .hub-card.g-purple { background: linear-gradient(135deg, #C3B2F7, #8B7CF0); }
-  .hub-card.g-blue { background: linear-gradient(135deg, #93C5F5, #5B9BF0); }
-  .hub-card.g-teal { background: linear-gradient(135deg, #6ED3C0, #2FB89B); }
-  .hub-card.g-pink { background: linear-gradient(135deg, #F6A8AE, #EE7E88); }
-  .hub-card.g-green { background: linear-gradient(135deg, #8EDB8A, #4CAF50); }
-  .hub-card.g-deep { background: linear-gradient(135deg, #7FBFA8, #3D8B74); }
-  .hub-card .t { font-size: 16px; font-weight: 800; padding-right: 26px; }
-  .hub-card .s { font-size: 12px; color: rgba(255,255,255,.88); margin-top: 3px; }
-  .hub-ic { position: absolute; right: 14px; bottom: 14px; width: 72px; height: 72px; border-radius: 50%; background: rgba(255,255,255,.28); display: flex; align-items: center; justify-content: center; }
-  .hub-ic img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; display: block; }
-  .hub-card .bdg { position: absolute; top: 12px; right: 12px; background: #DC2626; color: #fff; font-size: 11px; font-weight: 800; min-width: 20px; height: 20px; line-height: 20px; text-align: center; border-radius: 20px; padding: 0 6px; }
-  .hub-card .bdg.green { background: var(--ok); }
-  .side button img { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; vertical-align: -6px; margin-right: 8px; }
-  .side button.active { box-shadow: 0 4px 12px rgba(0,0,0,.18); }
   .gear img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; }
   .alert-chip img { width: 18px; height: 18px; border-radius: 50%; object-fit: cover; vertical-align: -4px; margin-right: 6px; }
   .secttl { font-size: 14px; font-weight: 800; margin: 4px 0 10px; }
@@ -141,13 +140,8 @@
   .msg.ok { color: var(--ok); }
   .msg.err { color: #B91C1C; }
   @media (max-width: 640px) {
-    .body { flex-direction: column; }
-    .side { width: 100%; position: static; display: flex; flex-wrap: wrap; gap: 2px; }
-    .side .cap { display: none; }
-    .side button { width: auto; flex: 1 1 auto; text-align: center; }
     .cards { grid-template-columns: repeat(2, 1fr); }
     .station-grid { grid-template-columns: repeat(2, 1fr); }
-    .hub { grid-template-columns: repeat(2, 1fr); }
   }
 </style>
 </head>
@@ -159,7 +153,7 @@
       <h1>Metro+ Admin Panel</h1>
       <p>24 stations &middot; Native app data &middot; Fri 06 Nov 2026</p>
     </div>
-    <span class="pill ver">v19 &middot; App 1.0.0(08)</span>
+    <span class="pill ver">v20 &middot; App 1.0.0(09)</span>
     <span class="pill sample">SAMPLE DATA</span>
     <div class="topright">
       <span class="clock" id="clock">--:--</span>
@@ -168,17 +162,6 @@
   </div>
 
   <div class="body">
-    <div class="side">
-      <div class="cap">MENU</div>
-      <button data-tab="dashboard" class="active" onclick="go('dashboard')"><img src="icons/icon-home.webp" alt="">Dashboard</button>
-      <button data-tab="staff" onclick="go('staff')"><img src="icons/icon-staff.webp" alt="">Staff</button>
-      <button data-tab="tl" onclick="go('tl')"><img src="icons/icon-key.webp" alt="">TL Access</button>
-      <button data-tab="data" onclick="go('data')"><img src="icons/icon-data.webp" alt="">Data</button>
-      <button data-tab="versions" onclick="go('versions')"><img src="icons/icon-versions.webp" alt="">Versions</button>
-      <button data-tab="premium" onclick="go('premium')"><img src="icons/icon-premium.webp" alt="">Premium Requests</button>
-      <button data-tab="settings" onclick="go('settings')"><img src="icons/icon-gear.webp" alt="">Settings</button>
-    </div>
-
     <div class="main">
       <!-- DASHBOARD -->
       <div class="tab show" id="tab-dashboard">
@@ -197,14 +180,13 @@
           <span class="alert-chip" onclick="go('data')"><img src="icons/icon-alert.webp" alt="">6 stations — Closing pending</span>
           <span class="alert-chip" onclick="go('staff')"><img src="icons/icon-alert.webp" alt="">2 staff — absent (sample)</span>
         </div>
-        <div class="secttl">Categories — sab kuch yahan se</div>
-        <div class="hub">
-          <div class="hub-card g-purple" onclick="go('staff')"><div class="t">Staff</div><div class="s">Roster + versions</div><span class="bdg green">120</span><div class="hub-ic"><img src="icons/icon-staff.webp" alt=""></div></div>
-          <div class="hub-card g-blue" onclick="go('tl')"><div class="t">TL Access</div><div class="s">TL logins</div><span class="bdg green">3</span><div class="hub-ic"><img src="icons/icon-key.webp" alt=""></div></div>
-          <div class="hub-card g-teal" onclick="go('data')"><div class="t">Data</div><div class="s">Opening / Closing / Complaints</div><div class="hub-ic"><img src="icons/icon-data.webp" alt=""></div></div>
-          <div class="hub-card g-pink" onclick="go('versions')"><div class="t">Versions</div><div class="s">Kis par konsi version</div><span class="bdg green">3</span><div class="hub-ic"><img src="icons/icon-versions.webp" alt=""></div></div>
-          <div class="hub-card g-green" onclick="go('premium')"><div class="t">Premium Requests</div><div class="s">Approve yahan se</div><span class="bdg">0</span><div class="hub-ic"><img src="icons/icon-premium.webp" alt=""></div></div>
-          <div class="hub-card g-deep" onclick="go('settings')"><div class="t">Settings</div><div class="s">Login, update, app</div><div class="hub-ic"><img src="icons/icon-gear.webp" alt=""></div></div>
+        <div class="secttl">Modules — kholo</div>
+        <div class="modlist">
+          <div class="modrow" onclick="go('staff')"><img src="icons/icon-staff.webp" alt=""><div class="mt"><div class="t">Staff</div><div class="s">Roster + versions &middot; 120 staff</div></div><span class="chev">&rsaquo;</span></div>
+          <div class="modrow" onclick="go('tl')"><img src="icons/icon-key.webp" alt=""><div class="mt"><div class="t">TL Access</div><div class="s">TL logins &middot; 3 TL</div></div><span class="chev">&rsaquo;</span></div>
+          <div class="modrow" onclick="go('data')"><img src="icons/icon-data.webp" alt=""><div class="mt"><div class="t">Data</div><div class="s">Opening / Closing / Complaints</div></div><span class="chev">&rsaquo;</span></div>
+          <div class="modrow" onclick="go('versions')"><img src="icons/icon-versions.webp" alt=""><div class="mt"><div class="t">Versions</div><div class="s">Kis par konsi version &middot; 3 versions</div></div><span class="chev">&rsaquo;</span></div>
+          <div class="modrow" onclick="go('premium')"><img src="icons/icon-premium.webp" alt=""><div class="mt"><div class="t">Premium Requests</div><div class="s">Approve yahan se &middot; 0 pending</div></div><span class="chev">&rsaquo;</span></div>
         </div>
         <div class="secttl">Stations — aaj (sample)</div>
         <div class="station-grid">
@@ -240,13 +222,14 @@
             <li><span class="tm">07:10</span><span class="dot"></span><span>Shaheed-e-Millat &mdash; Attendance 5/5</span></li>
             <li><span class="tm">13:20</span><span class="dot"></span><span>Faizabad &mdash; Closing pending</span></li>
             <li><span class="tm">18:05</span><span class="dot"></span><span>PIMS &mdash; Card claims 3 (Rs 390)</span></li>
-            <li><span class="tm">19:30</span><span class="dot"></span><span>Metro+ Admin v1.0.0(08) &mdash; update live</span></li>
+            <li><span class="tm">19:30</span><span class="dot"></span><span>Metro+ Admin v1.0.0(09) &mdash; update live</span></li>
           </ul>
         </div>
       </div>
 
       <!-- STAFF -->
-      <div class="tab" id="tab-staff">
+      <div class="tab page" id="tab-staff">
+        <div class="pagehead"><button class="back" onclick="closePage()" aria-label="Back">&lsaquo;</button><span class="pt">Staff</span></div>
         <h2>Staff</h2>
         <p class="sub">Roster aur installed version — station chun ke dekho (sample)</p>
         <div class="chiprow">
@@ -269,7 +252,8 @@
       </div>
 
       <!-- TL ACCESS -->
-      <div class="tab" id="tab-tl">
+      <div class="tab page" id="tab-tl">
+        <div class="pagehead"><button class="back" onclick="closePage()" aria-label="Back">&lsaquo;</button><span class="pt">TL Access</span></div>
         <h2>TL Access</h2>
         <p class="sub">TL login — Gmail + 5-digit password (sample, masked)</p>
         <div class="panel">
@@ -284,7 +268,8 @@
       </div>
 
       <!-- DATA -->
-      <div class="tab" id="tab-data">
+      <div class="tab page" id="tab-data">
+        <div class="pagehead"><button class="back" onclick="closePage()" aria-label="Back">&lsaquo;</button><span class="pt">Data</span></div>
         <h2>Data</h2>
         <p class="sub">Station + shift chun ke aaj ka data dekho (sample)</p>
         <div class="chiprow">
@@ -311,7 +296,8 @@
       </div>
 
       <!-- VERSIONS -->
-      <div class="tab" id="tab-versions">
+      <div class="tab page" id="tab-versions">
+        <div class="pagehead"><button class="back" onclick="closePage()" aria-label="Back">&lsaquo;</button><span class="pt">Versions</span></div>
         <h2>Versions</h2>
         <p class="sub">Kaunsi version kahan installed hai (sample)</p>
         <div class="panel">
@@ -326,7 +312,8 @@
       </div>
 
       <!-- PREMIUM REQUESTS -->
-      <div class="tab" id="tab-premium">
+      <div class="tab page" id="tab-premium">
+        <div class="pagehead"><button class="back" onclick="closePage()" aria-label="Back">&lsaquo;</button><span class="pt">Premium Requests</span></div>
         <h2>Premium Requests</h2>
         <p class="sub">TL ki premium requests yahan aayengi — tum Approve karo ge to uska premium khul jayega</p>
         <div class="panel">
@@ -338,7 +325,8 @@
       </div>
 
       <!-- SETTINGS -->
-      <div class="tab" id="tab-settings">
+      <div class="tab page" id="tab-settings">
+        <div class="pagehead"><button class="back" onclick="closePage()" aria-label="Back">&lsaquo;</button><span class="pt">Settings</span></div>
         <div class="hero">
           <h2>Settings</h2>
           <p>Admin login aur app ki setting yahan se badlo</p>
@@ -376,7 +364,7 @@
         <div class="panel">
           <h3>App</h3>
           <div class="rowline"><span>Version</span><b class="mono" id="appVersion">&mdash;</b></div>
-          <div class="rowline"><span>Update check</span><span>App khulte hi 5 second baad — nayi version ho to khud download + install</span></div>
+          <div class="rowline"><span>Update check</span><span>App khulte hi 5 second baad — nayi version ho to download hogi, phir Android ka install popup khulega</span></div>
           <div style="height:12px"></div>
           <button class="btn" onclick="checkUpdateNow()">Abhi update check karo</button>
           <div class="msg" id="updateCheckMsg"></div>
@@ -391,24 +379,57 @@
           <h3>About</h3>
           <div class="rowline"><span>App</span><span>Metro + Admin</span></div>
           <div class="rowline"><span>Package</span><span class="mono">com.metroplusadmin</span></div>
-          <div class="rowline"><span>Panel</span><span>v19 &middot; Metro+ Admin v1.0.0(08)</span></div>
+          <div class="rowline"><span>Panel</span><span>v20 &middot; Metro+ Admin v1.0.0(09)</span></div>
         </div>
         <p class="sub" id="settingsNote" style="display:none">Ye tab sirf app ke andar kaam karta hai — browser preview me naam/password nahi badal sakte.</p>
       </div>
     </div>
   </div>
-  <p class="foot">SAMPLE DATA — andar ke numbers asal data nahi hain. Asal Firebase (native_ collections) wiring Phase 2 me hogi. Metro+ Admin v1.0.0(08) &middot; Panel v19</p>
+  <p class="foot">SAMPLE DATA — andar ke numbers asal data nahi hain. Asal Firebase (native_ collections) wiring Phase 2 me hogi. Metro+ Admin v1.0.0(09) &middot; Panel v20</p>
+</div>
+<div class="dock">
+  <button data-dock="data" onclick="go('data')"><img src="icons/icon-data.webp" alt=""><span>Data</span></button>
+  <button data-dock="dashboard" class="active" onclick="go('dashboard')"><img src="icons/icon-home.webp" alt=""><span>Home</span></button>
+  <button data-dock="settings" onclick="go('settings')"><img src="icons/icon-gear.webp" alt=""><span>Settings</span></button>
 </div>
 <script>
+  // Home par dashboard; baaki sab NAYA PAGE (right se slide hoke aata hai).
+  // Page band: back button, dock Home, ya right side se left swipe.
+  var currentPage = null;
   function go(tab) {
-    document.querySelectorAll('.tab').forEach(function (el) { el.classList.remove('show'); });
+    if (tab === 'dashboard') { closePage(); return; }
     var t = document.getElementById('tab-' + tab);
-    if (t) t.classList.add('show');
-    document.querySelectorAll('.side button').forEach(function (b) {
-      b.classList.toggle('active', b.getAttribute('data-tab') === tab);
-    });
+    if (!t) return;
+    document.querySelectorAll('.tab.page').forEach(function (el) { el.classList.remove('open'); });
+    t.classList.add('open');
+    t.scrollTop = 0;
+    currentPage = tab;
+    setDock(tab);
     if (tab === 'settings') loadSettings();
   }
+  function closePage() {
+    document.querySelectorAll('.tab.page').forEach(function (el) { el.classList.remove('open'); });
+    currentPage = null;
+    setDock('dashboard');
+  }
+  function setDock(tab) {
+    document.querySelectorAll('.dock button').forEach(function (b) {
+      b.classList.toggle('active', b.getAttribute('data-dock') === tab);
+    });
+  }
+  // Right side se left swipe = page band (home wapas). Sirf tab swipe shuru
+  // ho right hisse se (table scroll se takrana nahi chahiye).
+  document.querySelectorAll('.tab.page').forEach(function (el) {
+    var sx = 0, sy = 0;
+    el.addEventListener('touchstart', function (e) {
+      sx = e.touches[0].clientX; sy = e.touches[0].clientY;
+    }, { passive: true });
+    el.addEventListener('touchend', function (e) {
+      var dx = e.changedTouches[0].clientX - sx;
+      var dy = e.changedTouches[0].clientY - sy;
+      if (sx > window.innerWidth * 0.6 && dx < -60 && Math.abs(dy) < 80) closePage();
+    }, { passive: true });
+  });
 
   function loadSettings() {
     var note = document.getElementById('settingsNote');
@@ -423,7 +444,7 @@
     } else {
       note.style.display = 'block';
       document.getElementById('adminCurrentName').textContent = 'Aryan';
-      document.getElementById('appVersion').textContent = '1.0.0(08)';
+      document.getElementById('appVersion').textContent = '1.0.0(09)';
     }
   }
 
