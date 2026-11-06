@@ -6,8 +6,14 @@
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <!-- Metro+ jaisa silent self-update (PackageInstaller session). -->
     <uses-permission android:name="android.permission.UPDATE_PACKAGES_WITHOUT_USER_ACTION" />
+    <!-- Fingerprint (BiometricPrompt) ke liye LAZMI — is ke baghair
+         authenticate() SecurityException deke app band kar deta hai
+         (v1.0.0(02) ka login-crash isi wajah se tha). -->
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+    <uses-permission android:name="android.permission.USE_FINGERPRINT" />
 
     <application
+        android:name=".AdminApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"

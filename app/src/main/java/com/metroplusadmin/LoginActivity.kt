@@ -43,6 +43,15 @@ class LoginActivity : Activity() {
         setContentView(buildUi())
 
         val prefs = getSharedPreferences(Auth.PREFS, MODE_PRIVATE)
+        // Pichhli dafa app band hui thi to wajah dikhao (screenshot ke liye).
+        prefs.getString("last_crash", null)?.let { crash ->
+            prefs.edit().remove("last_crash").apply()
+            android.app.AlertDialog.Builder(this)
+                .setTitle("Pichhli dafa app band hone ki wajah")
+                .setMessage(crash)
+                .setPositiveButton("Theek hai", null)
+                .show()
+        }
         val biometricEnabled = prefs.getBoolean(Auth.KEY_BIOMETRIC_ENABLED, false)
 
         // Fingerprint on hai to khulte hi mang lo.
@@ -209,10 +218,11 @@ class LoginActivity : Activity() {
                 }
             )
             .build()
-        prompt.authenticate(
-            signal,
-            mainExecutor,
-            object : BiometricPrompt.AuthenticationCallback() {
+        try {
+            prompt.authenticate(
+                signal,
+                mainExecutor,
+                object : BiometricPrompt.AuthenticationCallback() {
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult?) {
                     if (enroll) {
                         getSharedPreferences(Auth.PREFS, MODE_PRIVATE)
@@ -235,7 +245,13 @@ class LoginActivity : Activity() {
                     if (enroll) openMain()
                 }
             }
-        )
+            )
+        } catch (e: Exception) {
+            // Fingerprint khul hi na sake (permission/hardware) — app band
+            // nahi hogi; password se login rehta hai.
+            statusText.text = "Fingerprint nahi khula — password se login karo"
+            if (enroll) openMain()
+        }
     }
 
     private fun openMain() {

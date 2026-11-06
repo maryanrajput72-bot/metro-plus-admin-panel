@@ -26,17 +26,28 @@ class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        webView = WebView(this)
-        setContentView(webView)
+        try {
+            webView = WebView(this)
+            setContentView(webView)
 
-        with(webView.settings) {
-            javaScriptEnabled = true
-            domStorageEnabled = true
-            allowFileAccess = true
-            cacheMode = WebSettings.LOAD_DEFAULT
+            with(webView.settings) {
+                javaScriptEnabled = true
+                domStorageEnabled = true
+                allowFileAccess = true
+                cacheMode = WebSettings.LOAD_DEFAULT
+            }
+            webView.webViewClient = WebViewClient()
+            webView.loadUrl("file:///android_asset/panel/index.html")
+        } catch (e: Exception) {
+            // WebView na khule to app band nahi hogi — wajah screen par aayegi.
+            val errorView = android.widget.TextView(this).apply {
+                text = "Panel nahi khula:\n${e.javaClass.simpleName}: ${e.message}"
+                textSize = 16f
+                setPadding(48, 48, 48, 48)
+            }
+            setContentView(errorView)
+            return
         }
-        webView.webViewClient = WebViewClient()
-        webView.loadUrl("file:///android_asset/panel/index.html")
 
         // Zabii ka sticky rule: app open pe 5 second baad update check LAZMI.
         Handler(Looper.getMainLooper()).postDelayed({ runUpdateCheck() }, 5_000L)
