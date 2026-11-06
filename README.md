@@ -1,7 +1,7 @@
 # Metro + Admin
 
 Admin panel app — **Metro+** staff app ka admin panel, Android app ke andar.
-Naam: **Metro + Admin** · Package: **com.metroplusadmin** · Current version: **1.0.0(13)** (versionCode 13)
+Naam: **Metro + Admin** · Package: **com.metroplusadmin** · Current version: **1.0.0(14)** (versionCode 14)
 
 ## Logo
 
@@ -12,7 +12,7 @@ ko hue-shift karke banaye gaye).
 
 ## Structure — har file mehfooz hai
 
-- `panel/` — v24 admin panel website (HTML + CSS + JS, `index.html` + `logo-green.png` + `icons/`).
+- `panel/` — v25 admin panel website (HTML + CSS + JS, `index.html` + `logo-green.png` + `icons/`).
   Browser me bhi chalti hai, GitHub Pages par bhi.
 - `app/` — Android app (Kotlin, WebView). Panel app ke andar bundled hai:
   `app/src/main/assets/panel/index.html` — **wahi file jo `panel/` me hai**,
@@ -29,6 +29,30 @@ ko hue-shift karke banaye gaye).
 - `keystore/` + `keystore.properties` — **GitHub par KABHI nahi** (`.gitignore`).
   Sirf is machine par. Ye key Metro+ staff app wali key se ALAG hai, taake
   Admin app staff app ke upar install na ho.
+
+## Advanced UI (v1.0.0(14)) — ECC frontend skills se
+
+Zabii ka order (2026-11-07 ~00:35 PKT): ECC skills se panel ki UI/UX
+ADVANCED level ki — ek ek cheez pe coloring, pyara text, cards. Direction
+(uska confirm kiya hua): lively, exact, warm; moments = Today's Status hero
++ Total collected; signature = live status dot. Ye unslop (13) wali quiet
+direction ko override karti hai.
+
+- **Category cards — har module ka apna tint:** Staff green (#E6F4F1),
+  TL Access amber (#FEF6E0), Data blue (#E3EFFC), Versions purple (#EFE9FD),
+  Premium rose (#FDECEC); icon circle usi rang ka gehra tint; badge
+  dot + count waisa hi.
+- **Data tab panels:** Opening green (#EAF6F3), Closing blue (#EAF2FD),
+  Total gold (#FDF6E3) — Total collected bara green number.
+- **Station cards:** kinare par status rang — green = opening+closing
+  saved, amber = ek saved, grey = kuch nahi aaya (dot wahi rang).
+- **NAHI badla:** gel M logo, 3D icons, hero, topbar, dock, live data
+  logic, layout/sections.
+- **Verify:** Node harness (asal Firestore data, 05: 1/24, 1/24, 11/11,
+  Total Rs 60; 06: 0/24, 1/24, 11/11, Total Rs 0) + headless screenshots
+  home + Data. NOTE: /tmp saaf ho gaya tha — harness dobara banaya aur
+  persistent copy `hidden_files/panel-harness.js` me rakhi; REST dump bhi
+  `hidden_files/records-list.json` me.
 
 ## Unslop polish (v1.0.0(13))
 
