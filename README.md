@@ -1,7 +1,7 @@
 # Metro + Admin
 
 Admin panel app — **Metro+** staff app ka admin panel, Android app ke andar.
-Naam: **Metro + Admin** · Package: **com.metroplusadmin** · Current version: **1.0.0(12)** (versionCode 12)
+Naam: **Metro + Admin** · Package: **com.metroplusadmin** · Current version: **1.0.0(13)** (versionCode 13)
 
 ## Logo
 
@@ -12,7 +12,7 @@ ko hue-shift karke banaye gaye).
 
 ## Structure — har file mehfooz hai
 
-- `panel/` — v23 admin panel website (HTML + CSS + JS, `index.html` + `logo-green.png` + `icons/`).
+- `panel/` — v24 admin panel website (HTML + CSS + JS, `index.html` + `logo-green.png` + `icons/`).
   Browser me bhi chalti hai, GitHub Pages par bhi.
 - `app/` — Android app (Kotlin, WebView). Panel app ke andar bundled hai:
   `app/src/main/assets/panel/index.html` — **wahi file jo `panel/` me hai**,
@@ -29,6 +29,37 @@ ko hue-shift karke banaye gaye).
 - `keystore/` + `keystore.properties` — **GitHub par KABHI nahi** (`.gitignore`).
   Sirf is machine par. Ye key Metro+ staff app wali key se ALAG hai, taake
   Admin app staff app ke upar install na ho.
+
+## Unslop polish (v1.0.0(13))
+
+Zabii ka order (2026-11-07 ~00:00 PKT): open-source **unslop** skill
+(heydamir/unslop, CC-BY-4.0 — credit Settings About me + panel HTML
+comment me) se panel ko polish karo. Skill `~/workspace/custom-skills/unslop/`
+me save hai. Direction (product se): calm, exact, thoda warm; world =
+metro station; moments = Today's Status hero + Total collected; signature
+= har station card par live status dot.
+
+- **Color:** teal gradient 5 surfaces se hata (topbar, category cards, hero,
+  Settings hero, button) — surfaces neutral white/hairline, green sirf
+  accent (button, selected dock, live dot). Hero (moment) solid #0F766E.
+  Rang wali shadows/glow hata — neutral soft shadows.
+- **Type:** weights 800/700 → 600 tak; uppercase tracked labels → sentence
+  case (hero labels, card labels, table headers).
+- **Icons:** "Closing ⏳" emoji hata — pending ab quiet text + dot.
+- **Details:** red badge pill → quiet text + dot; pills/chips radius 20 →
+  8/12; spacing 4px grid par (18px → 20/16, 12.5px → 12px).
+- **Signature dot:** station card par dot — green = opening+closing saved,
+  amber = ek saved, grey = kuch nahi aaya; pehli paint se grey dot +
+  pills blank (sample number kabhi nahi dikhta).
+- **Honesty fix (saath me):** koi doc na ho to alert "Aaj sab live" ke
+  bajaye "Live data abhi nahi aaya — net check karo" dikhata hai.
+- **Bug fix:** `.big-total` ka `var(--green)` undefined tha — :root me
+  `--green: #15803D` add kiya, ab Total collected waqai green hai.
+- **NAHI badla:** gel M logo, 3D icons, layout/sections order, live data
+  logic, fade/slide motion.
+- **Verify:** Node harness /tmp/panel-harness.js (05: 1/24, 1/24, 11/11;
+  06: 0/24, 1/24, 11/11; no-docs: "Live data abhi nahi aaya"); headless
+  screenshots home + Data page.
 
 ## Data tab — dropdowns + Opening/Closing/Total (v1.0.0(12))
 
