@@ -1,7 +1,7 @@
 # Metro + Admin
 
 Admin panel app — **Metro+** staff app ka admin panel, Android app ke andar.
-Naam: **Metro + Admin** · Package: **com.metroplusadmin** · Current version: **1.0.0(09)** (versionCode 9)
+Naam: **Metro + Admin** · Package: **com.metroplusadmin** · Current version: **1.0.0(10)** (versionCode 10)
 
 ## Logo
 
@@ -12,7 +12,7 @@ ko hue-shift karke banaye gaye).
 
 ## Structure — har file mehfooz hai
 
-- `panel/` — v20 admin panel website (HTML + CSS + JS, `index.html` + `logo-green.png` + `icons/`).
+- `panel/` — v21 admin panel website (HTML + CSS + JS, `index.html` + `logo-green.png` + `icons/`).
   Browser me bhi chalti hai, GitHub Pages par bhi.
 - `app/` — Android app (Kotlin, WebView). Panel app ke andar bundled hai:
   `app/src/main/assets/panel/index.html` — **wahi file jo `panel/` me hai**,
@@ -29,6 +29,24 @@ ko hue-shift karke banaye gaye).
 - `keystore/` + `keystore.properties` — **GitHub par KABHI nahi** (`.gitignore`).
   Sirf is machine par. Ye key Metro+ staff app wali key se ALAG hai, taake
   Admin app staff app ke upar install na ho.
+
+## Square category boxes + English hero (v1.0.0(10))
+
+Zabii ka order (pehle updater solve, phir ye layout):
+- **Updater — phone par zaroori step:** (08) wali app mein "Install unknown
+  apps" permission kabhi on nahi hui — is liye andar se update atakti thi.
+  Zabii ko pehle ye on karna hai: Settings → Apps → Metro + Admin →
+  Install unknown apps → Allow. Phir app kholo — 5 second mein update
+  download hogi aur NATIVE install popup khulega (09) wala flow. Agar phir
+  bhi na aaye to (10) file se install kar lo; (10) ke baad se updater pakka
+  native popup wala hai.
+- **Home:** upar **5 categories SQUARE hero-style boxes** (Staff, TL Access,
+  Data, Versions, Premium Requests) — hero card wala green gradient, 3D icon
+  halke circle me, badge. Tap = naya page (wahi slide + back + swipe).
+- **"Aaj ki halat" neeche + ENGLISH:** ab "Today's Status" — "All stations
+  at a glance (sample)"; tiles pehle se English the.
+- **Pages Metro app jaisa:** khulte waqt fade + slide in, band hote waqt
+  fade out (opacity transition bhi lag gaya).
 
 ## Native install popup + home redesign (v1.0.0(09))
 
