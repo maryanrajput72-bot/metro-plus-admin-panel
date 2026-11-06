@@ -1,7 +1,7 @@
 # Metro + Admin
 
 Admin panel app — **Metro+** staff app ka admin panel, Android app ke andar.
-Naam: **Metro + Admin** · Package: **com.metroplusadmin** · Pehli version: **1.0.0(01)** (versionCode 1)
+Naam: **Metro + Admin** · Package: **com.metroplusadmin** · Current version: **1.0.0(02)** (versionCode 2)
 
 ## Logo
 
@@ -27,7 +27,16 @@ ko hue-shift karke banaye gaye).
   Sirf is machine par. Ye key Metro+ staff app wali key se ALAG hai, taake
   Admin app staff app ke upar install na ho.
 
-## Panel — kya hai, kya nahi (v1.0.0(01))
+## Login — fingerprint + password (v1.0.0(02))
+
+Har dafa app kholo to **lock screen** aayegi:
+- **Fingerprint** on hai to khulte hi fingerprint mangta hai — OK hote hi login.
+- Fingerprint na ho / cancel ho to **Name + Password** se login: Name `Aryan`.
+- Pehli dafa password se login hone par fingerprint set karne ko kehta hai.
+- Password code me **plain nahi hai** — sirf uska salted SHA-256 hash hai
+  (`Auth.kt`); asal password repo ya kisi file me kahin nahi likha.
+
+## Panel — kya hai, kya nahi (v1.0.0(02))
 
 Tabs: Dashboard (24 stations), Staff, TL Access, Data, Versions, Premium Requests.
 
