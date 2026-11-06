@@ -1,9 +1,11 @@
 package com.metroplusadmin
 
 import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.webkit.JavascriptInterface
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -37,6 +39,8 @@ class MainActivity : Activity() {
                 cacheMode = WebSettings.LOAD_DEFAULT
             }
             webView.webViewClient = WebViewClient()
+            // Settings tab ka bridge — panel se naam/password badlo.
+            webView.addJavascriptInterface(SettingsBridge(this), "AdminSettings")
             webView.loadUrl("file:///android_asset/panel/index.html")
         } catch (e: Exception) {
             // WebView na khule to app band nahi hogi — wajah screen par aayegi.
@@ -90,5 +94,28 @@ class MainActivity : Activity() {
         } else {
             super.onBackPressed()
         }
+    }
+}
+
+/**
+ * Panel ke Settings tab ka bridge — naam/password badlo.
+ * Password yahan kabhi plain save nahi hota: Auth sirf salt + SHA-256 hash
+ * rakhta hai. Result: "ok" / "wrong_current" / "empty" / "short".
+ */
+class SettingsBridge(private val context: Context) {
+
+    @JavascriptInterface
+    fun getAdminName(): String {
+        val prefs = context.getSharedPreferences(Auth.PREFS, Context.MODE_PRIVATE)
+        return Auth.storedName(prefs)
+    }
+
+    @JavascriptInterface
+    fun getAppVersion(): String = BuildConfig.VERSION_NAME
+
+    @JavascriptInterface
+    fun changeCredentials(currentPassword: String, newName: String, newPassword: String): String {
+        val prefs = context.getSharedPreferences(Auth.PREFS, Context.MODE_PRIVATE)
+        return Auth.changeCredentials(prefs, currentPassword, newName, newPassword)
     }
 }

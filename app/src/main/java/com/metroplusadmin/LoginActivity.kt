@@ -1,7 +1,9 @@
 package com.metroplusadmin
 
+import android.animation.ValueAnimator
 import android.app.Activity
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.hardware.biometrics.BiometricPrompt
@@ -12,18 +14,26 @@ import android.text.InputType
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
+import android.view.animation.LinearInterpolator
 import android.widget.Button
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 
 /**
- * Admin app lock screen — har dafa app kholo to ye screen aayegi.
+ * Splash + lock screen.
  *
- * - Fingerprint on hai to khulte hi fingerprint mangta hai — OK hote hi login.
+ * Har dafa app kholo to pehle SPLASH: green M logo (white circle, green ring)
+ * + neeche progress bar chalti hai → phir login screen aati hai.
+ *
+ * Login screen (nayi design, v1.0.0(04)): green gradient background, white
+ * rounded card, logo circle upar, gol input boxes, green button.
+ * - Fingerprint on hai to splash ke baad khud fingerprint mangta hai.
  * - Fingerprint na ho / cancel ho to Name + Password se login.
  * - Pehli dafa password se login hone par fingerprint set karne ko kehta hai.
  *
@@ -35,12 +45,21 @@ class LoginActivity : Activity() {
     private lateinit var nameInput: EditText
     private lateinit var passwordInput: EditText
     private lateinit var statusText: TextView
+    private lateinit var splashView: View
+    private lateinit var loginView: View
     private var cancellationSignal: CancellationSignal? = null
     private var openedMain = false
+    private var splashDone = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(buildUi())
+
+        val root = FrameLayout(this)
+        splashView = buildSplash()
+        loginView = buildLoginUi().apply { visibility = View.GONE }
+        root.addView(splashView)
+        root.addView(loginView)
+        setContentView(root)
 
         val prefs = getSharedPreferences(Auth.PREFS, MODE_PRIVATE)
         // Pichhli dafa app band hui thi to wajah dikhao (screenshot ke liye).
@@ -52,12 +71,11 @@ class LoginActivity : Activity() {
                 .setPositiveButton("Theek hai", null)
                 .show()
         }
-        val biometricEnabled = prefs.getBoolean(Auth.KEY_BIOMETRIC_ENABLED, false)
 
-        // Fingerprint on hai to khulte hi mang lo.
-        if (biometricEnabled && isBiometricAvailable()) {
-            window.decorView.postDelayed({ showBiometricPrompt(enroll = false) }, 400L)
-        }
+        // Naam pehle se bhara ho (Settings se badla ho to wahi aayega).
+        nameInput.setText(Auth.storedName(prefs))
+
+        runSplash()
     }
 
     override fun onPause() {
@@ -70,9 +88,120 @@ class LoginActivity : Activity() {
             TypedValue.COMPLEX_UNIT_DIP, value.toFloat(), resources.displayMetrics
         ).toInt()
 
-    private fun buildUi(): View {
+    private fun greenGradient(): GradientDrawable = GradientDrawable(
+        GradientDrawable.Orientation.TOP_BOTTOM,
+        intArrayOf(Color.parseColor("#065F46"), Color.parseColor("#022C22"))
+    )
+
+    private fun buildSplash(): View {
+        val splash = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER
+            background = greenGradient()
+            setPadding(dp(24), dp(24), dp(24), dp(24))
+        }
+
+        // Logo — white circle, green ring, andar green M.
+        val circleWrap = FrameLayout(this)
+        val circle = View(this).apply {
+            background = GradientDrawable().apply {
+                shape = GradientDrawable.OVAL
+                setColor(Color.WHITE)
+                setStroke(dp(4), Color.parseColor("#34D399"))
+            }
+        }
+        circleWrap.addView(circle, FrameLayout.LayoutParams(dp(112), dp(112), Gravity.CENTER))
+        val logo = ImageView(this).apply {
+            setImageResource(R.mipmap.ic_launcher)
+            adjustViewBounds = true
+        }
+        circleWrap.addView(logo, FrameLayout.LayoutParams(dp(96), dp(96), Gravity.CENTER))
+        splash.addView(circleWrap, LinearLayout.LayoutParams(dp(112), dp(112)))
+
+        val title = TextView(this).apply {
+            text = "Metro + Admin"
+            textSize = 24f
+            setTextColor(Color.WHITE)
+            gravity = Gravity.CENTER
+            setPadding(0, dp(18), 0, 0)
+        }
+        splash.addView(title)
+
+        val sub = TextView(this).apply {
+            text = "Admin Panel"
+            textSize = 13f
+            setTextColor(Color.parseColor("#A7F3D0"))
+            gravity = Gravity.CENTER
+            setPadding(0, dp(4), 0, dp(28))
+        }
+        splash.addView(sub)
+
+        val bar = ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal).apply {
+            max = 100
+            progress = 0
+            progressTintList = ColorStateList.valueOf(Color.parseColor("#34D399"))
+            progressBackgroundTintList = ColorStateList.valueOf(Color.parseColor("#FFFFFF"))
+            alpha = 0.35f
+            id = View.generateViewId()
+            tag = "splashBar"
+        }
+        splash.addView(bar, LinearLayout.LayoutParams(dp(200), dp(6)))
+
+        val loading = TextView(this).apply {
+            text = "Khul raha hai…"
+            textSize = 12f
+            setTextColor(Color.parseColor("#D1FAE5"))
+            gravity = Gravity.CENTER
+            setPadding(0, dp(12), 0, 0)
+        }
+        splash.addView(loading)
+
+        return splash
+    }
+
+    private fun runSplash() {
+        val bar = splashView.findViewWithTag<ProgressBar>("splashBar") ?: run {
+            showLogin()
+            return
+        }
+        ValueAnimator.ofInt(0, 100).apply {
+            duration = 1800L
+            interpolator = LinearInterpolator()
+            addUpdateListener { bar.progress = it.animatedValue as Int }
+            addListener(object : android.animation.AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: android.animation.Animator) {
+                    showLogin()
+                }
+            })
+            start()
+        }
+    }
+
+    private fun showLogin() {
+        if (splashDone) return
+        splashDone = true
+        splashView.animate().alpha(0f).setDuration(300L).withEndAction {
+            splashView.visibility = View.GONE
+        }.start()
+        loginView.alpha = 0f
+        loginView.visibility = View.VISIBLE
+        loginView.animate().alpha(1f).setDuration(300L).start()
+
+        // Fingerprint on hai to splash ke baad khud mang lo.
+        val prefs = getSharedPreferences(Auth.PREFS, MODE_PRIVATE)
+        if (prefs.getBoolean(Auth.KEY_BIOMETRIC_ENABLED, false) && isBiometricAvailable()) {
+            loginView.postDelayed({ showBiometricPrompt(enroll = false) }, 400L)
+        }
+    }
+
+    private fun roundedInputBg(): GradientDrawable = GradientDrawable().apply {
+        setColor(Color.parseColor("#F3F4F6"))
+        cornerRadius = dp(12).toFloat()
+    }
+
+    private fun buildLoginUi(): View {
         val scroll = ScrollView(this).apply {
-            setBackgroundColor(Color.parseColor("#0B3D2E"))
+            background = greenGradient()
         }
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -87,17 +216,28 @@ class LoginActivity : Activity() {
             setPadding(dp(24), dp(28), dp(24), dp(28))
             background = GradientDrawable().apply {
                 setColor(Color.WHITE)
-                cornerRadius = dp(20).toFloat()
+                cornerRadius = dp(24).toFloat()
             }
         }
         root.addView(card, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
 
+        // Logo circle upar.
+        val circleWrap = FrameLayout(this)
+        val circle = View(this).apply {
+            background = GradientDrawable().apply {
+                shape = GradientDrawable.OVAL
+                setColor(Color.WHITE)
+                setStroke(dp(3), Color.parseColor("#34D399"))
+            }
+        }
+        circleWrap.addView(circle, FrameLayout.LayoutParams(dp(88), dp(88), Gravity.CENTER))
         val logo = ImageView(this).apply {
             setImageResource(R.mipmap.ic_launcher)
             adjustViewBounds = true
         }
-        card.addView(logo, LinearLayout.LayoutParams(dp(88), dp(88)))
+        circleWrap.addView(logo, FrameLayout.LayoutParams(dp(76), dp(76), Gravity.CENTER))
+        card.addView(circleWrap, LinearLayout.LayoutParams(dp(88), dp(88)))
 
         val title = TextView(this).apply {
             text = "Metro + Admin"
@@ -113,7 +253,7 @@ class LoginActivity : Activity() {
             textSize = 14f
             setTextColor(Color.parseColor("#6B7280"))
             gravity = Gravity.CENTER
-            setPadding(0, dp(4), 0, dp(18))
+            setPadding(0, dp(4), 0, dp(20))
         }
         card.addView(sub)
 
@@ -121,7 +261,8 @@ class LoginActivity : Activity() {
             hint = "Name"
             inputType = InputType.TYPE_CLASS_TEXT
             textSize = 16f
-            setPadding(dp(14), dp(12), dp(14), dp(12))
+            background = roundedInputBg()
+            setPadding(dp(16), dp(13), dp(16), dp(13))
         }
         card.addView(nameInput, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
@@ -132,7 +273,8 @@ class LoginActivity : Activity() {
             hint = "Password"
             inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
             textSize = 16f
-            setPadding(dp(14), dp(12), dp(14), dp(12))
+            background = roundedInputBg()
+            setPadding(dp(16), dp(13), dp(16), dp(13))
         }
         card.addView(passwordInput, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
@@ -143,15 +285,36 @@ class LoginActivity : Activity() {
             text = "Login"
             textSize = 16f
             setTextColor(Color.WHITE)
-            background = GradientDrawable().apply {
-                setColor(Color.parseColor("#0F766E"))
-                cornerRadius = dp(12).toFloat()
-            }
-            setPadding(dp(16), dp(12), dp(16), dp(12))
+            background = GradientDrawable(
+                GradientDrawable.Orientation.LEFT_RIGHT,
+                intArrayOf(Color.parseColor("#0F766E"), Color.parseColor("#14B8A6"))
+            ).apply { cornerRadius = dp(14).toFloat() }
+            setPadding(dp(16), dp(13), dp(16), dp(13))
             setOnClickListener { onPasswordLogin() }
         }
         card.addView(loginButton, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
+
+        // Fingerprint on hai to haath se bhi mangne ka button.
+        val prefs = getSharedPreferences(Auth.PREFS, MODE_PRIVATE)
+        if (prefs.getBoolean(Auth.KEY_BIOMETRIC_ENABLED, false) && isBiometricAvailable()) {
+            val fpButton = Button(this).apply {
+                text = "Fingerprint se login karo"
+                textSize = 15f
+                setTextColor(Color.parseColor("#0F766E"))
+                background = GradientDrawable().apply {
+                    setColor(Color.WHITE)
+                    setStroke(dp(2), Color.parseColor("#0F766E"))
+                    cornerRadius = dp(14).toFloat()
+                }
+                setPadding(dp(16), dp(12), dp(16), dp(12))
+                setOnClickListener { showBiometricPrompt(enroll = false) }
+            }
+            card.addView(fpButton, LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+                topMargin = dp(10)
+            })
+        }
 
         statusText = TextView(this).apply {
             text = ""
@@ -177,12 +340,12 @@ class LoginActivity : Activity() {
     private fun onPasswordLogin() {
         val name = nameInput.text.toString()
         val password = passwordInput.text.toString()
-        if (!Auth.checkCredentials(name, password)) {
+        val prefs = getSharedPreferences(Auth.PREFS, MODE_PRIVATE)
+        if (!Auth.checkCredentials(prefs, name, password)) {
             statusText.text = "Naam ya password ghalat hai"
             return
         }
         statusText.text = ""
-        val prefs = getSharedPreferences(Auth.PREFS, MODE_PRIVATE)
         val biometricEnabled = prefs.getBoolean(Auth.KEY_BIOMETRIC_ENABLED, false)
         // Pehli dafa password se login — fingerprint set karne ko kaho.
         if (!biometricEnabled && isBiometricAvailable()) {
@@ -223,28 +386,28 @@ class LoginActivity : Activity() {
                 signal,
                 mainExecutor,
                 object : BiometricPrompt.AuthenticationCallback() {
-                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult?) {
-                    if (enroll) {
-                        getSharedPreferences(Auth.PREFS, MODE_PRIVATE)
-                            .edit().putBoolean(Auth.KEY_BIOMETRIC_ENABLED, true).apply()
-                        Toast.makeText(
-                            this@LoginActivity,
-                            "Fingerprint set ho gaya", Toast.LENGTH_SHORT
-                        ).show()
+                    override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult?) {
+                        if (enroll) {
+                            getSharedPreferences(Auth.PREFS, MODE_PRIVATE)
+                                .edit().putBoolean(Auth.KEY_BIOMETRIC_ENABLED, true).apply()
+                            Toast.makeText(
+                                this@LoginActivity,
+                                "Fingerprint set ho gaya", Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        openMain()
                     }
-                    openMain()
-                }
 
-                override fun onAuthenticationFailed() {
-                    statusText.text = "Fingerprint match nahi hua — dobara try karo ya password lagao"
-                }
+                    override fun onAuthenticationFailed() {
+                        statusText.text = "Fingerprint match nahi hua — dobara try karo ya password lagao"
+                    }
 
-                override fun onAuthenticationError(errorCode: Int, errString: CharSequence?) {
-                    // User ne cancel kiya ya fingerprint set nahi — password screen hi rehti hai.
-                    // Enroll prompt tha to seedha andar (password login ho chuka hai).
-                    if (enroll) openMain()
+                    override fun onAuthenticationError(errorCode: Int, errString: CharSequence?) {
+                        // User ne cancel kiya ya fingerprint set nahi — password screen hi rehti hai.
+                        // Enroll prompt tha to seedha andar (password login ho chuka hai).
+                        if (enroll) openMain()
+                    }
                 }
-            }
             )
         } catch (e: Exception) {
             // Fingerprint khul hi na sake (permission/hardware) — app band

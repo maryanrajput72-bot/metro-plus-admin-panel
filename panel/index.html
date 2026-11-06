@@ -59,6 +59,18 @@
   .rowline:last-child { border-bottom: 0; }
   .empty { text-align: center; padding: 26px 12px; color: var(--muted); font-size: 13px; line-height: 1.6; }
   .empty b { color: var(--ink); }
+  .hero { background: linear-gradient(135deg, #0F766E 0%, #14B8A6 100%); color: #fff; border-radius: 14px; padding: 18px; margin-bottom: 14px; }
+  .hero h2 { color: #fff; margin-bottom: 3px; }
+  .hero p { font-size: 12.5px; opacity: .92; }
+  .field { margin-bottom: 12px; }
+  .field label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 5px; }
+  .field input { width: 100%; padding: 11px 12px; font-size: 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface2); color: var(--ink); }
+  .field input:focus { outline: none; border-color: var(--brand2); background: #fff; }
+  .btn { display: inline-block; background: var(--brand); color: #fff; border: 0; font-size: 14px; font-weight: 700; padding: 11px 22px; border-radius: 10px; cursor: pointer; }
+  .btn:active { opacity: .85; }
+  .msg { font-size: 13px; font-weight: 700; margin-top: 12px; min-height: 18px; }
+  .msg.ok { color: var(--ok); }
+  .msg.err { color: #B91C1C; }
   @media (max-width: 640px) {
     .body { flex-direction: column; }
     .side { width: 100%; position: static; display: flex; flex-wrap: wrap; gap: 2px; }
@@ -76,7 +88,7 @@
       <h1>Metro+ Admin Panel</h1>
       <p>24 stations &middot; Native app data &middot; Fri 06 Nov 2026</p>
     </div>
-    <span class="pill ver">v18 &middot; App 1.0.0(01)</span>
+    <span class="pill ver">v18 &middot; App 1.0.0(04)</span>
     <span class="pill sample">SAMPLE DATA</span>
   </div>
 
@@ -89,6 +101,7 @@
       <button data-tab="data" onclick="go('data')">Data</button>
       <button data-tab="versions" onclick="go('versions')">Versions</button>
       <button data-tab="premium" onclick="go('premium')">Premium Requests</button>
+      <button data-tab="settings" onclick="go('settings')">Settings</button>
     </div>
 
     <div class="main">
@@ -225,9 +238,47 @@
           Approval sirf tum kar sako ge — TL khud ko approve nahi kar sakta.</div>
         </div>
       </div>
+
+      <!-- SETTINGS -->
+      <div class="tab" id="tab-settings">
+        <div class="hero">
+          <h2>Settings</h2>
+          <p>Admin login aur app ki setting yahan se badlo</p>
+        </div>
+        <div class="panel">
+          <h3>Admin Login</h3>
+          <div class="rowline"><span>Abhi ka naam</span><b id="adminCurrentName">&mdash;</b></div>
+          <div style="height:12px"></div>
+          <div class="field">
+            <label>Abhi ka password</label>
+            <input type="password" id="curPw" placeholder="Abhi wala password likho" autocomplete="off">
+          </div>
+          <div class="field">
+            <label>Naya naam</label>
+            <input type="text" id="newName" placeholder="Naya naam" autocomplete="off">
+          </div>
+          <div class="field">
+            <label>Naya password</label>
+            <input type="password" id="newPw" placeholder="Naya password (kam se kam 4 harf)" autocomplete="off">
+          </div>
+          <div class="field">
+            <label>Naya password dobara</label>
+            <input type="password" id="newPw2" placeholder="Naya password dobara likho" autocomplete="off">
+          </div>
+          <button class="btn" onclick="saveAdminLogin()">Save kar do</button>
+          <div class="msg" id="adminLoginMsg"></div>
+          <p class="sub" style="margin-top:10px;margin-bottom:0">Save hote hi agli dafa login naye naam + naye password se hoga. Password kahin plain save nahi hota.</p>
+        </div>
+        <div class="panel">
+          <h3>App</h3>
+          <div class="rowline"><span>Version</span><b class="mono" id="appVersion">&mdash;</b></div>
+          <div class="rowline"><span>Update check</span><span>App khulte hi 5 second baad — nayi version ho to khud download + install</span></div>
+        </div>
+        <p class="sub" id="settingsNote" style="display:none">Ye tab sirf app ke andar kaam karta hai — browser preview me naam/password nahi badal sakte.</p>
+      </div>
     </div>
   </div>
-  <p class="foot">SAMPLE DATA — andar ke numbers asal data nahi hain. Asal Firebase (native_ collections) wiring Phase 2 me hogi. Metro+ Admin v1.0.0(03) &middot; Panel v18</p>
+  <p class="foot">SAMPLE DATA — andar ke numbers asal data nahi hain. Asal Firebase (native_ collections) wiring Phase 2 me hogi. Metro+ Admin v1.0.0(04) &middot; Panel v18</p>
 </div>
 <script>
   function go(tab) {
@@ -237,6 +288,56 @@
     document.querySelectorAll('.side button').forEach(function (b) {
       b.classList.toggle('active', b.getAttribute('data-tab') === tab);
     });
+    if (tab === 'settings') loadSettings();
+  }
+
+  function loadSettings() {
+    var note = document.getElementById('settingsNote');
+    if (window.AdminSettings) {
+      note.style.display = 'none';
+      try {
+        document.getElementById('adminCurrentName').textContent = AdminSettings.getAdminName();
+        document.getElementById('newName').value = AdminSettings.getAdminName();
+        document.getElementById('appVersion').textContent = AdminSettings.getAppVersion();
+      } catch (e) { }
+    } else {
+      note.style.display = 'block';
+      document.getElementById('adminCurrentName').textContent = 'Aryan';
+      document.getElementById('appVersion').textContent = '1.0.0(04)';
+    }
+  }
+
+  function saveAdminLogin() {
+    var msg = document.getElementById('adminLoginMsg');
+    var cur = document.getElementById('curPw').value;
+    var name = document.getElementById('newName').value.trim();
+    var pw = document.getElementById('newPw').value;
+    var pw2 = document.getElementById('newPw2').value;
+    msg.className = 'msg err';
+    if (!window.AdminSettings) {
+      msg.textContent = 'Ye sirf app ke andar kaam karta hai.';
+      return;
+    }
+    if (!cur || !name || !pw) { msg.textContent = 'Teeno boxes bharo — abhi ka password, naya naam, naya password.'; return; }
+    if (pw !== pw2) { msg.textContent = 'Naya password dono dafa ek jaisa likho.'; return; }
+    var res = '';
+    try { res = AdminSettings.changeCredentials(cur, name, pw); } catch (e) { res = 'error'; }
+    if (res === 'ok') {
+      msg.className = 'msg ok';
+      msg.textContent = 'Save ho gaya — agli dafa login naye naam + naye password se hoga.';
+      document.getElementById('adminCurrentName').textContent = name;
+      document.getElementById('curPw').value = '';
+      document.getElementById('newPw').value = '';
+      document.getElementById('newPw2').value = '';
+    } else if (res === 'wrong_current') {
+      msg.textContent = 'Abhi ka password ghalat hai — dobara likho.';
+    } else if (res === 'short') {
+      msg.textContent = 'Naya password kam se kam 4 harf ka rakho.';
+    } else if (res === 'empty') {
+      msg.textContent = 'Naam ya password khaali nahi ho sakta.';
+    } else {
+      msg.textContent = 'Save nahi hua — dobara try karo.';
+    }
   }
 </script>
 </body>

@@ -1,7 +1,7 @@
 # Metro + Admin
 
 Admin panel app — **Metro+** staff app ka admin panel, Android app ke andar.
-Naam: **Metro + Admin** · Package: **com.metroplusadmin** · Current version: **1.0.0(03)** (versionCode 3)
+Naam: **Metro + Admin** · Package: **com.metroplusadmin** · Current version: **1.0.0(04)** (versionCode 4)
 
 ## Logo
 
@@ -29,6 +29,17 @@ ko hue-shift karke banaye gaye).
 - `keystore/` + `keystore.properties` — **GitHub par KABHI nahi** (`.gitignore`).
   Sirf is machine par. Ye key Metro+ staff app wali key se ALAG hai, taake
   Admin app staff app ke upar install na ho.
+
+## Splash + nayi login + Settings (v1.0.0(04))
+
+- **Splash:** har open pe green M logo (white circle, green ring) + neeche progress
+  bar chalti hai (~1.8s), phir login screen aati hai.
+- **Login redesign:** green gradient background, white rounded card, logo circle,
+  gol input boxes, green gradient button, fingerprint button (on ho to).
+- **Settings tab (panel):** upar hero card + "Admin Login" — abhi ka password
+  daal ke naam/password badlo. Nayi values SharedPreferences me salt+hash ke
+  tor par save hoti hain (`Auth.kt`); login wahi check karta hai. Browser
+  preview me Settings kaam nahi karta — sirf app ke andar (JS bridge).
 
 ## Login-crash fix (v1.0.0(03))
 
