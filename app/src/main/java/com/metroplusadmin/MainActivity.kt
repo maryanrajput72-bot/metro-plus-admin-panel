@@ -211,4 +211,16 @@ class SettingsBridge(private val activity: MainActivity) {
         // JS bridge background thread par chalta hai — main par bhejo.
         Handler(Looper.getMainLooper()).post { activity.runUpdateCheckNow() }
     }
+
+    @JavascriptInterface
+    fun getBiometricEnabled(): Boolean {
+        val prefs = context.getSharedPreferences(Auth.PREFS, Context.MODE_PRIVATE)
+        return prefs.getBoolean(Auth.KEY_BIOMETRIC_ENABLED, false)
+    }
+
+    @JavascriptInterface
+    fun setBiometricEnabled(enabled: Boolean) {
+        val prefs = context.getSharedPreferences(Auth.PREFS, Context.MODE_PRIVATE)
+        prefs.edit().putBoolean(Auth.KEY_BIOMETRIC_ENABLED, enabled).apply()
+    }
 }

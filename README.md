@@ -1,7 +1,7 @@
 # Metro + Admin
 
 Admin panel app — **Metro+** staff app ka admin panel, Android app ke andar.
-Naam: **Metro + Admin** · Package: **com.metroplusadmin** · Current version: **1.0.0(06)** (versionCode 6)
+Naam: **Metro + Admin** · Package: **com.metroplusadmin** · Current version: **1.0.0(07)** (versionCode 7)
 
 ## Logo
 
@@ -29,6 +29,24 @@ ko hue-shift karke banaye gaye).
 - `keystore/` + `keystore.properties` — **GitHub par KABHI nahi** (`.gitignore`).
   Sirf is machine par. Ye key Metro+ staff app wali key se ALAG hai, taake
   Admin app staff app ke upar install na ho.
+
+## Proper home screen (v1.0.0(07))
+
+Online research (mobile dashboard patterns) + Gemini ideas (gemini-3.5-flash) se:
+- **Top bar:** ghari (HH:MM, live) + ⚙️ gear button — Settings seedha upar se.
+- **Hero card:** pehle jaisa summary + har tile par progress ring (Opening 87%,
+  Closing 75%, Attendance 98%).
+- **Alert strip:** sirf pending cheezein (Opening 3, Closing 6, absent 2) — tap
+  karne par us tab par jata hai.
+- **Categories hub:** 6 module cards (Staff, TL Access, Data, Versions, Premium
+  Requests, Settings) — badge counts ke saath, tap par tab khulta hai.
+- **Station matrix:** 24 stations ab table nahi, 2/4-column cards — naam, number,
+  Opening/Closing pills, attendance. Phone par 2-column.
+- **Audit stream:** aaj ki activity timeline (sample).
+- **Settings detail:** Security (fingerprint on/off toggle — asal kaam karta hai,
+  bridge se), Admin Login, App (manual update check), Data & Backup (sample
+  notice), About.
+- Panel data abhi bhi SAMPLE hai (Phase 2 Firebase wiring pending).
 
 ## Updater diagnose (v1.0.0(06))
 
