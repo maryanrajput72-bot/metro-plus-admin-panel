@@ -1,7 +1,7 @@
 # Metro + Admin
 
 Admin panel app — **Metro+** staff app ka admin panel, Android app ke andar.
-Naam: **Metro + Admin** · Package: **com.metroplusadmin** · Current version: **1.0.0(11)** (versionCode 11)
+Naam: **Metro + Admin** · Package: **com.metroplusadmin** · Current version: **1.0.0(12)** (versionCode 12)
 
 ## Logo
 
@@ -12,7 +12,7 @@ ko hue-shift karke banaye gaye).
 
 ## Structure — har file mehfooz hai
 
-- `panel/` — v22 admin panel website (HTML + CSS + JS, `index.html` + `logo-green.png` + `icons/`).
+- `panel/` — v23 admin panel website (HTML + CSS + JS, `index.html` + `logo-green.png` + `icons/`).
   Browser me bhi chalti hai, GitHub Pages par bhi.
 - `app/` — Android app (Kotlin, WebView). Panel app ke andar bundled hai:
   `app/src/main/assets/panel/index.html` — **wahi file jo `panel/` me hai**,
@@ -29,6 +29,40 @@ ko hue-shift karke banaye gaye).
 - `keystore/` + `keystore.properties` — **GitHub par KABHI nahi** (`.gitignore`).
   Sirf is machine par. Ye key Metro+ staff app wali key se ALAG hai, taake
   Admin app staff app ke upar install na ho.
+
+## Data tab — dropdowns + Opening/Closing/Total (v1.0.0(12))
+
+Zabii ka order (2026-11-06 ~22:47 PKT): Data me Opening aur Closing dono
+aayen (jo save hai), har roll aaye; pehle Opening section, phir Closing,
+neeche total (aaj kitne use hue, kya hisab hai, kitni amount collect hui);
+station aur shift DROPDOWN se select hon.
+
+- **Dropdowns:** Station (24) + Shift (Morning/Evening) — upar, neeche
+  usi station+shift ka data.
+- **Opening section:** har roll (BOP / TOM / TKM) — Opening, Receive,
+  Distribute; machines (TOM A–E) — Opening, Card; "Opening saved ✓ time"
+  ya "save NAHI hui".
+- **Closing section:** har roll — Opening, Closing, Used
+  (`rollUsed = opening+receive-distribute-closing`); machines — Opening,
+  Recharge, Closing, Card Sale, Sale (Rs).
+- **Total — aaj ka hisab** (native app wale formula, `grandTotals` +
+  `cardSaleAmount`): Rolls used (BOP/TOM/TKM), Machine sale Rs, BOP sale
+  (slips × Rs 30), Grand sale Rs + slips, Card sale (cards × Rs 30),
+  **Total collected aaj = Grand sale + Card sale** (Rs, bara number).
+- **Hero fix:** Opening/Closing done ab native app ke History chips jaisa
+  — SAVED flags (`openingSaved`/`closingSaved`) se, values se nahi; aur
+  per-station gintee (dono shifts hon to bhi station ek dafa).
+- **Verify (Node harness `/tmp/panel-harness.js`, asal Firestore data):**
+  05-Evening TOM — Opening BOP 09/TOM 10/TKM 11, machines A/B, Grand sale
+  Rs 60 · 2 slips, Total Rs 60; 06-Evening TOM (22:28 save) — Opening flag
+  nahi, Closing saved ✓, sale Rs 0; hero 05: 1/24, 1/24, 11/11; 06: 0/24,
+  1/24, 11/11; sirf "0" card wali machines (C/D) chhupi hui.
+- **NOTE — native app ka encode/decode mismatch (Metro+ main-chat ka
+  kaam, panel ka nahi):** `TomRecord.kt` me encoder cards ko flags se
+  PEHLE likhta hai (35–44), decoder flags ko pehle parhta hai (35–39,
+  cards 43–52). 06-Evening record (53 fields) isi liye ajeeb decode hota
+  hai (cleared="1", rsOpen=timestamp jaisa). Panel decoder ka bilkul
+  mirror hai — jo native app khud parhega, wahi panel dikhata hai.
 
 ## Firebase LIVE (v1.0.0(11)) — nayi native Metro app ka Firebase
 

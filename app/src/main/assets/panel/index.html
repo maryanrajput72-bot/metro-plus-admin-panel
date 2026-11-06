@@ -124,6 +124,11 @@
   .chiprow { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
   .chip { font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border); background: var(--surface2); color: var(--ink); cursor: pointer; }
   .chip.on { background: var(--brand); border-color: var(--brand); color: #fff; }
+  /* Data tab dropdowns — station + shift select. */
+  .ddrow { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .dd { font-size: 12px; font-weight: 700; color: var(--muted); display: block; }
+  .dd select { display: block; width: 100%; margin-top: 5px; background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 12px 10px; font-size: 15px; font-weight: 800; color: var(--ink); }
+  .big-total { font-size: 26px; font-weight: 800; color: var(--green); }
   .foot { font-size: 12px; color: var(--muted); text-align: center; padding: 6px 0 2px; }
   .rowline { display: flex; justify-content: space-between; gap: 10px; padding: 9px 2px; border-bottom: 1px solid var(--border); font-size: 13px; }
   .rowline:last-child { border-bottom: 0; }
@@ -155,7 +160,7 @@
       <h1>Metro+ Admin Panel</h1>
       <p>24 stations &middot; Native app data &middot; Fri 06 Nov 2026</p>
     </div>
-    <span class="pill ver">v22 &middot; App 1.0.0(11)</span>
+    <span class="pill ver">v23 &middot; App 1.0.0(12)</span>
     <span class="pill sample" id="livePill">CONNECTING…</span>
     <div class="topright">
       <span class="clock" id="clock">--:--</span>
@@ -226,7 +231,7 @@
             <li><span class="tm">07:10</span><span class="dot"></span><span>Shaheed-e-Millat &mdash; Attendance 5/5</span></li>
             <li><span class="tm">13:20</span><span class="dot"></span><span>Faizabad &mdash; Closing pending</span></li>
             <li><span class="tm">18:05</span><span class="dot"></span><span>PIMS &mdash; Card claims 3 (Rs 390)</span></li>
-            <li><span class="tm">19:30</span><span class="dot"></span><span>Metro+ Admin v1.0.0(11) &mdash; update live</span></li>
+            <li><span class="tm">19:30</span><span class="dot"></span><span>Metro+ Admin v1.0.0(12) &mdash; update live</span></li>
           </ul>
         </div>
       </div>
@@ -262,9 +267,29 @@
         <div class="pagehead"><button class="back" onclick="closePage()" aria-label="Back">&lsaquo;</button><span class="pt">Data</span></div>
         <h2>Data</h2>
         <p class="sub">Station + shift chun ke aaj ka LIVE data dekho (native app se)</p>
-        <div class="chiprow" id="dataChips"></div>
-        <div class="chiprow" id="dataShiftChips"></div>
-        <div class="cards" id="dataCards"></div>
+        <div class="ddrow">
+          <label class="dd">Station
+            <select id="dataStationSel" onchange="onDataStation()"></select>
+          </label>
+          <label class="dd">Shift
+            <select id="dataShiftSel" onchange="onDataShift()">
+              <option>Evening</option>
+              <option>Morning</option>
+            </select>
+          </label>
+        </div>
+        <div class="panel" id="dataOpening">
+          <h3>Opening</h3>
+          <p class="sub">Live data load ho raha hai…</p>
+        </div>
+        <div class="panel" id="dataClosing">
+          <h3>Closing</h3>
+          <p class="sub">Live data load ho raha hai…</p>
+        </div>
+        <div class="panel" id="dataTotal">
+          <h3>Total — aaj ka hisab</h3>
+          <p class="sub">Live data load ho raha hai…</p>
+        </div>
         <div class="panel">
           <h3 id="dataAttTitle">Attendance — aaj (live)</h3>
           <table id="dataAttTable">
@@ -356,13 +381,13 @@
           <h3>About</h3>
           <div class="rowline"><span>App</span><span>Metro + Admin</span></div>
           <div class="rowline"><span>Package</span><span class="mono">com.metroplusadmin</span></div>
-          <div class="rowline"><span>Panel</span><span>v22 &middot; Metro+ Admin v1.0.0(11)</span></div>
+          <div class="rowline"><span>Panel</span><span>v23 &middot; Metro+ Admin v1.0.0(12)</span></div>
         </div>
         <p class="sub" id="settingsNote" style="display:none">Ye tab sirf app ke andar kaam karta hai — browser preview me naam/password nahi badal sakte.</p>
       </div>
     </div>
   </div>
-  <p class="foot" id="liveFoot">Live data connect ho raha hai… Metro+ Admin v1.0.0(11) &middot; Panel v22</p>
+  <p class="foot" id="liveFoot">Live data connect ho raha hai… Metro+ Admin v1.0.0(12) &middot; Panel v23</p>
 </div>
 <div class="dock">
   <button data-dock="data" onclick="go('data')"><img src="icons/icon-data.webp" alt=""><span>Data</span></button>
@@ -421,7 +446,7 @@
     } else {
       note.style.display = 'block';
       document.getElementById('adminCurrentName').textContent = 'Aryan';
-      document.getElementById('appVersion').textContent = '1.0.0(11)';
+      document.getElementById('appVersion').textContent = '1.0.0(12)';
     }
   }
 
@@ -529,6 +554,7 @@
     function isNum(s) { return s != null && ('' + s).trim() !== '' && !isNaN(parseFloat(s)); }
     function fmtRs(v) { var n = Math.round(v); var neg = n < 0; var d = Math.abs(n).toString().split('').reverse().join('').replace(/(\d{3})(?=\d)/g, '$1,').split('').reverse().join(''); return (neg ? '-' : '') + d; }
     function machineSale(o, r, c) { if (!isNum(c)) return 0; return Math.max(0, (num(o) + num(r)) - num(c)); }
+    function rollUsed(o, r, d, c) { if (!isNum(c)) return 0; return Math.max(0, (num(o) + num(r) - num(d)) - num(c)); }
 
     // TomRecord.encode() ka JS mirror (native app, TomRecord.kt).
     // indices: 0 station, 1 shift, 2 dateKey, 5-8 BOP roll, 9-11 BOP card/
@@ -543,7 +569,11 @@
       ['a', 'b', 'c', 'd', 'e'].forEach(function (k, idx) {
         var b = 20 + idx * 3, cb = 43 + idx * 2;
         var m = { opening: at(b), recharge: at(b + 1), closing: at(b + 2), cards: at(cb), cardSale: at(cb + 1) };
-        if (m.opening || m.recharge || m.closing || m.cards || m.cardSale) machines[k] = m;
+        if (m.opening || m.recharge || m.closing || m.cards || m.cardSale) {
+          // Dikhane layak: asal register value ho — sirf "0" card wali machine (POS default) shor hai.
+          m.show = !!(m.opening || m.recharge || m.closing || (m.cards && m.cards !== '0') || (m.cardSale && m.cardSale !== '0'));
+          machines[k] = m;
+        }
       });
       function rollHasOpen(r) { return r.opening || r.receive || r.distribute; }
       var bop = { opening: at(5), receive: at(6), distribute: at(7), closing: at(8) };
@@ -598,7 +628,7 @@
     function setFoot() {
       var f = $('#liveFoot');
       if (!f) return;
-      var base = 'Metro+ Admin v1.0.0(11) · Panel v22';
+      var base = 'Metro+ Admin v1.0.0(12) · Panel v23';
       if (liveState === 'live') f.textContent = 'LIVE DATA — Firebase metro-plus-5966d (records, sirf native_ docs) · aakhri update ' + (lastUpdate || '') + ' · ' + base;
       else if (liveState === 'cache') f.textContent = 'CACHE se dikh raha hai — net aate hi live ho jayega · ' + base;
       else if (liveState === 'offline') f.textContent = 'OFFLINE — live data nahi mila, dobara kholo ya net check karo · ' + base;
@@ -622,8 +652,6 @@
       var grid = $('.station-grid');
       if (grid) grid.querySelectorAll('.station-card .pill').forEach(function (p) { p.textContent = '—'; p.style.background = '#F1F5F9'; p.style.color = '#64748B'; });
       var sc = $('#staffChips'); if (sc) sc.innerHTML = '';
-      var dc = $('#dataChips'); if (dc) dc.innerHTML = '';
-      var cards = $('#dataCards'); if (cards) cards.innerHTML = '';
     }
 
     function renderLive() {
@@ -632,21 +660,25 @@
       var openDone = 0, closeDone = 0, present = 0, total = 0, absent = 0;
       var alerts = [];
       STATIONS.forEach(function (st) {
+        var stOpen = false, stClose = false;
         ['Morning', 'Evening'].forEach(function (sh) {
           var d = dayDoc(st.name, sh, today);
           if (!d) return;
           var tom = d.tom ? decodeTom(d.tom) : null;
-          if (tom) { if (tom.hasOpen) openDone++; if (tom.hasClose) closeDone++; }
+          // Native app ke History chips jaisa — SAVED flags, values nahi.
+          if (tom) { if (tom.openingSaved) stOpen = true; if (tom.closingSaved) stClose = true; }
           var rows = (d.staffDay && d.staffDay.rows) || [];
           rows.forEach(function (r) {
             total++;
             if (isPresent(r)) present++;
             else if ((r.status || '') === 'absent' || (r.status || '') === 'leave') absent++;
           });
-          if (!tom || !tom.closingSaved) alerts.push({ t: st.name + ' — Closing pending', tab: 'data' });
-          else if (!tom.openingSaved) alerts.push({ t: st.name + ' — Opening pending', tab: 'data' });
+          if (!tom || !tom.closingSaved) alerts.push({ t: st.name + ' ' + sh + ' — Closing pending', tab: 'data' });
+          else if (!tom.openingSaved) alerts.push({ t: st.name + ' ' + sh + ' — Opening pending', tab: 'data' });
           rows.forEach(function (r) { if ((r.status || '') === 'absent') alerts.push({ t: r.name + ' — absent', tab: 'data' }); });
         });
+        if (stOpen) openDone++;
+        if (stClose) closeDone++;
       });
       // Hero
       var stats = document.querySelectorAll('#tab-dashboard .hero-stat');
@@ -737,26 +769,65 @@
     }
 
     function renderData(today) {
-      var dc = $('#dataChips');
-      if (dc) dc.innerHTML = chipsHTML(STATIONS.map(function (s) { return s.name; }), sel.dataStation, 'pickDataStation');
-      var dsc = $('#dataShiftChips');
-      if (dsc) dsc.innerHTML = chipsHTML(['Evening', 'Morning'], sel.dataShift, 'pickDataShift');
-      var cards = $('#dataCards');
       var day = dayDoc(sel.dataStation, sel.dataShift, today);
       var tom = day && day.tom ? decodeTom(day.tom) : null;
-      if (cards) {
+      var head = sel.dataStation + ' · ' + sel.dataShift + ' — ' + today;
+      // Opening section — har roll (BOP / TOM / TKM) jaisa save hua.
+      var op = $('#dataOpening');
+      if (op) {
         if (!tom) {
-          cards.innerHTML =
-            '<div class="card"><div class="k">Opening</div><div class="v">—</div><div class="d">Aaj ka TOM abhi nahi aaya</div></div>' +
-            '<div class="card"><div class="k">Closing</div><div class="v">—</div><div class="d">Aaj ka TOM abhi nahi aaya</div></div>' +
-            '<div class="card"><div class="k">Sale</div><div class="v">—</div><div class="d">Aaj ka TOM abhi nahi aaya</div></div>' +
-            '<div class="card"><div class="k">Card sale</div><div class="v">—</div><div class="d">Aaj ka TOM abhi nahi aaya</div></div>';
+          op.innerHTML = '<h3>Opening — ' + esc(head) + '</h3><p class="sub">Aaj ka TOM abhi nahi aaya — Opening save nahi hui.</p>';
         } else {
-          cards.innerHTML =
-            '<div class="card"><div class="k">Opening</div><div class="v">' + (tom.openingSaved ? 'Saved ✓' : 'Not saved') + '</div><div class="d">' + esc(tom.openingSavedAt || '—') + '</div></div>' +
-            '<div class="card"><div class="k">Closing</div><div class="v">' + (tom.closingSaved ? 'Saved ✓' : 'Not saved') + '</div><div class="d">' + esc(tom.closingSavedAt || '—') + '</div></div>' +
-            '<div class="card"><div class="k">Sale</div><div class="v">Rs ' + fmtRs(tom.saleRs) + '</div><div class="d">' + tom.slips + ' slips</div></div>' +
-            '<div class="card"><div class="k">Card sale</div><div class="v">' + tom.cardCount + '<small> cards</small></div><div class="d">Rs ' + fmtRs(tom.cardRs) + ' · Rs 30/card</div></div>';
+          var mOpen = ['a', 'b', 'c', 'd', 'e'].filter(function (k) { return tom.machines[k] && tom.machines[k].show; });
+          op.innerHTML = '<h3>Opening — ' + esc(head) + '</h3>' +
+            '<p class="sub">' + (tom.openingSaved ? 'Opening saved ✓ ' + esc(tom.openingSavedAt || '') : 'Opening save NAHI hui') + '</p>' +
+            '<table><tr><th>Roll</th><th>Opening</th><th>Receive</th><th>Distribute</th></tr>' +
+            [['BOP', tom.bop], ['TOM', tom.tom], ['TKM', tom.tkm]].map(function (x) {
+              return '<tr><td>' + x[0] + '</td><td class="mono">' + esc(x[1].opening || '—') + '</td><td class="mono">' + esc(x[1].receive || '—') + '</td><td class="mono">' + esc(x[1].distribute || '—') + '</td></tr>';
+            }).join('') + '</table>' +
+            (mOpen.length ? '<table><tr><th>Machine</th><th>Opening</th><th>Card</th></tr>' +
+              mOpen.map(function (k) { var m = tom.machines[k];
+                return '<tr><td>TOM ' + k.toUpperCase() + '</td><td class="mono">' + esc(m.opening || '—') + '</td><td class="mono">' + esc(m.cards || '—') + '</td></tr>';
+              }).join('') + '</table>' : '');
+        }
+      }
+      // Closing section — har roll closing + used, machines closing + sale.
+      var cl = $('#dataClosing');
+      if (cl) {
+        if (!tom) {
+          cl.innerHTML = '<h3>Closing — ' + esc(head) + '</h3><p class="sub">Aaj ka TOM abhi nahi aaya — Closing save nahi hui.</p>';
+        } else {
+          var mClose = ['a', 'b', 'c', 'd', 'e'].filter(function (k) { return tom.machines[k] && tom.machines[k].show; });
+          cl.innerHTML = '<h3>Closing — ' + esc(head) + '</h3>' +
+            '<p class="sub">' + (tom.closingSaved ? 'Closing saved ✓ ' + esc(tom.closingSavedAt || '') : 'Closing save NAHI hui') + '</p>' +
+            '<table><tr><th>Roll</th><th>Opening</th><th>Closing</th><th>Used</th></tr>' +
+            [['BOP', tom.bop], ['TOM', tom.tom], ['TKM', tom.tkm]].map(function (x) {
+              var u = rollUsed(x[1].opening, x[1].receive, x[1].distribute, x[1].closing);
+              return '<tr><td>' + x[0] + '</td><td class="mono">' + esc(x[1].opening || '—') + '</td><td class="mono">' + esc(x[1].closing || '—') + '</td><td class="mono">' + u + '</td></tr>';
+            }).join('') + '</table>' +
+            (mClose.length ? '<table><tr><th>Machine</th><th>Opening</th><th>Recharge</th><th>Closing</th><th>Card Sale</th><th>Sale</th></tr>' +
+              mClose.map(function (k) { var m = tom.machines[k];
+                return '<tr><td>TOM ' + k.toUpperCase() + '</td><td class="mono">' + esc(m.opening || '—') + '</td><td class="mono">' + esc(m.recharge || '—') + '</td><td class="mono">' + esc(m.closing || '—') + '</td><td class="mono">' + esc(m.cardSale || '—') + '</td><td class="mono">Rs ' + fmtRs(machineSale(m.opening, m.recharge, m.closing)) + '</td></tr>';
+              }).join('') + '</table>' : '');
+        }
+      }
+      // Total — aaj ka hisab (native app wale formula: grandTotals + card sale).
+      var tt = $('#dataTotal');
+      if (tt) {
+        if (!tom) {
+          tt.innerHTML = '<h3>Total — aaj ka hisab</h3><p class="sub">Aaj ka TOM abhi nahi aaya — hisab tab aayega jab Opening/Closing save hogi.</p>';
+        } else {
+          var uB = rollUsed(tom.bop.opening, tom.bop.receive, tom.bop.distribute, tom.bop.closing);
+          var uT = rollUsed(tom.tom.opening, tom.tom.receive, tom.tom.distribute, tom.tom.closing);
+          var uK = rollUsed(tom.tkm.opening, tom.tkm.receive, tom.tkm.distribute, tom.tkm.closing);
+          var totalCollected = tom.saleRs + tom.cardRs;
+          tt.innerHTML = '<h3>Total — aaj ka hisab</h3>' +
+            '<div class="rowline"><span>Rolls used</span><span>BOP ' + uB + ' · TOM ' + uT + ' · TKM ' + uK + ' = <b>' + (uB + uT + uK) + '</b></span></div>' +
+            '<div class="rowline"><span>Machine sale</span><span>Rs ' + fmtRs(tom.saleRs - num(tom.bopSaleSlips) * 30) + '</span></div>' +
+            '<div class="rowline"><span>BOP sale</span><span>' + (tom.bopSaleSlips || 0) + ' slips · Rs ' + fmtRs(num(tom.bopSaleSlips) * 30) + '</span></div>' +
+            '<div class="rowline"><span>Grand sale</span><span>Rs ' + fmtRs(tom.saleRs) + ' · ' + tom.slips + ' slips</span></div>' +
+            '<div class="rowline"><span>Card sale</span><span>' + tom.cardCount + ' cards · Rs ' + fmtRs(tom.cardRs) + '</span></div>' +
+            '<div class="rowline"><span><b>Total collected aaj</b></span><span class="big-total">Rs ' + fmtRs(totalCollected) + '</span></div>';
         }
       }
       var title = $('#dataAttTitle');
@@ -774,8 +845,18 @@
 
     window.pickStaffStation = function (n) { sel.staffStation = n; renderStaff(todayKey()); };
     window.pickStaffShift = function (s) { sel.staffShift = s; renderStaff(todayKey()); };
-    window.pickDataStation = function (n) { sel.dataStation = n; renderData(todayKey()); };
-    window.pickDataShift = function (s) { sel.dataShift = s; renderData(todayKey()); };
+    window.onDataStation = function () { var s = $('#dataStationSel'); if (s) sel.dataStation = s.value; renderData(todayKey()); };
+    window.onDataShift = function () { var s = $('#dataShiftSel'); if (s) sel.dataShift = s.value; renderData(todayKey()); };
+    function fillDataSelects() {
+      var s = $('#dataStationSel');
+      if (s) s.innerHTML = STATIONS.map(function (st) {
+        return '<option' + (st.name === sel.dataStation ? ' selected' : '') + '>' + esc(st.name) + '</option>';
+      }).join('');
+      var sh = $('#dataShiftSel');
+      if (sh) sh.value = sel.dataShift;
+    }
+    // Test hook (Node harness ke liye) — sirf render chalata hai, kuch likhta nahi.
+    window.__adminLive = { setDocs: function (d) { liveDocs = d || {}; renderLive(); }, state: function () { return liveState; } };
 
     function loadScript(src) {
       return new Promise(function (res, rej) {
@@ -818,6 +899,7 @@
       if (nm) STATIONS.push({ name: nm.textContent.trim(), no: no ? no.textContent.replace(/[^0-9]/g, '') : '' });
     });
     markConnecting();
+    fillDataSelects();
     renderStaff(todayKey());
     renderData(todayKey());
     (async function () {
