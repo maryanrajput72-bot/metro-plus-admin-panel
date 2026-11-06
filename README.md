@@ -1,7 +1,7 @@
 # Metro + Admin
 
 Admin panel app — **Metro+** staff app ka admin panel, Android app ke andar.
-Naam: **Metro + Admin** · Package: **com.metroplusadmin** · Current version: **1.0.0(07)** (versionCode 7)
+Naam: **Metro + Admin** · Package: **com.metroplusadmin** · Current version: **1.0.0(08)** (versionCode 8)
 
 ## Logo
 
@@ -12,7 +12,7 @@ ko hue-shift karke banaye gaye).
 
 ## Structure — har file mehfooz hai
 
-- `panel/` — v18 admin panel website (HTML + CSS + JS, `index.html` + `logo-green.png`).
+- `panel/` — v19 admin panel website (HTML + CSS + JS, `index.html` + `logo-green.png` + `icons/`).
   Browser me bhi chalti hai, GitHub Pages par bhi.
 - `app/` — Android app (Kotlin, WebView). Panel app ke andar bundled hai:
   `app/src/main/assets/panel/index.html` — **wahi file jo `panel/` me hai**,
@@ -29,6 +29,19 @@ ko hue-shift karke banaye gaye).
 - `keystore/` + `keystore.properties` — **GitHub par KABHI nahi** (`.gitignore`).
   Sirf is machine par. Ye key Metro+ staff app wali key se ALAG hai, taake
   Admin app staff app ke upar install na ho.
+
+## 3D icons + soft reference cards (v1.0.0(08))
+
+Zabii ke reference (soft gradient cards — title left, 3D icon halke circle me
+bottom-right) jaisa:
+- **8 glossy 3D icons** (`panel/icons/`, 512px WebP): home, staff, key, data,
+  versions, premium, gear, alert — Metro+ ke glossy gel logo wali style me.
+- **Categories hub** ab reference wale soft gradient cards: har card ka apna
+  gradient (Staff purple, TL blue, Data teal, Versions pink, Premium green,
+  Settings deep green), title + subtitle left, 3D icon halke circle me
+  bottom-right. Phone par 2-column, desktop par 3-column.
+- **Side menu + topbar gear + alert chips** me bhi wahi 3D icons (gol).
+- **Soft buttons:** `.btn` ab green gradient + soft shadow, radius 14px.
 
 ## Proper home screen (v1.0.0(07))
 

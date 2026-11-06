@@ -57,15 +57,27 @@
   .alerts::-webkit-scrollbar { display: none; }
   .alert-chip { flex: 0 0 auto; background: var(--warnBg); border: 1px solid #FCD34D; color: #92400E; font-size: 12.5px; font-weight: 700; padding: 9px 13px; border-radius: 20px; cursor: pointer; box-shadow: 0 0 12px rgba(245,158,11,.25); }
   .alert-chip:active { transform: scale(.97); }
-  /* Categories hub */
-  .hub { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
-  .hub-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 14px; cursor: pointer; position: relative; min-height: 84px; }
+  /* Categories hub — reference wale soft gradient cards jaisa:
+     title + subtitle left, 3D icon halke circle me bottom-right. */
+  .hub { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 14px; }
+  .hub-card { border: 0; border-radius: 20px; padding: 16px; cursor: pointer; position: relative; min-height: 148px; color: #fff; box-shadow: 0 8px 20px rgba(15,118,110,.18); }
   .hub-card:active { transform: scale(.97); }
-  .hub-card .ic { font-size: 22px; }
-  .hub-card .t { font-size: 13.5px; font-weight: 800; margin-top: 6px; }
-  .hub-card .s { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
-  .hub-card .bdg { position: absolute; top: 10px; right: 10px; background: #DC2626; color: #fff; font-size: 11px; font-weight: 800; min-width: 20px; height: 20px; line-height: 20px; text-align: center; border-radius: 20px; padding: 0 6px; }
+  .hub-card.g-purple { background: linear-gradient(135deg, #C3B2F7, #8B7CF0); }
+  .hub-card.g-blue { background: linear-gradient(135deg, #93C5F5, #5B9BF0); }
+  .hub-card.g-teal { background: linear-gradient(135deg, #6ED3C0, #2FB89B); }
+  .hub-card.g-pink { background: linear-gradient(135deg, #F6A8AE, #EE7E88); }
+  .hub-card.g-green { background: linear-gradient(135deg, #8EDB8A, #4CAF50); }
+  .hub-card.g-deep { background: linear-gradient(135deg, #7FBFA8, #3D8B74); }
+  .hub-card .t { font-size: 16px; font-weight: 800; padding-right: 26px; }
+  .hub-card .s { font-size: 12px; color: rgba(255,255,255,.88); margin-top: 3px; }
+  .hub-ic { position: absolute; right: 14px; bottom: 14px; width: 72px; height: 72px; border-radius: 50%; background: rgba(255,255,255,.28); display: flex; align-items: center; justify-content: center; }
+  .hub-ic img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; display: block; }
+  .hub-card .bdg { position: absolute; top: 12px; right: 12px; background: #DC2626; color: #fff; font-size: 11px; font-weight: 800; min-width: 20px; height: 20px; line-height: 20px; text-align: center; border-radius: 20px; padding: 0 6px; }
   .hub-card .bdg.green { background: var(--ok); }
+  .side button img { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; vertical-align: -6px; margin-right: 8px; }
+  .side button.active { box-shadow: 0 4px 12px rgba(0,0,0,.18); }
+  .gear img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; }
+  .alert-chip img { width: 18px; height: 18px; border-radius: 50%; object-fit: cover; vertical-align: -4px; margin-right: 6px; }
   .secttl { font-size: 14px; font-weight: 800; margin: 4px 0 10px; }
   /* Station matrix cards */
   .station-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
@@ -123,7 +135,7 @@
   .field label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 5px; }
   .field input { width: 100%; padding: 11px 12px; font-size: 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface2); color: var(--ink); }
   .field input:focus { outline: none; border-color: var(--brand2); background: #fff; }
-  .btn { display: inline-block; background: var(--brand); color: #fff; border: 0; font-size: 14px; font-weight: 700; padding: 11px 22px; border-radius: 10px; cursor: pointer; }
+  .btn { display: inline-block; background: linear-gradient(135deg, #0F766E, #14B8A6); color: #fff; border: 0; font-size: 14px; font-weight: 700; padding: 12px 24px; border-radius: 14px; cursor: pointer; box-shadow: 0 6px 16px rgba(15,118,110,.35); }
   .btn:active { opacity: .85; }
   .msg { font-size: 13px; font-weight: 700; margin-top: 12px; min-height: 18px; }
   .msg.ok { color: var(--ok); }
@@ -147,24 +159,24 @@
       <h1>Metro+ Admin Panel</h1>
       <p>24 stations &middot; Native app data &middot; Fri 06 Nov 2026</p>
     </div>
-    <span class="pill ver">v18 &middot; App 1.0.0(07)</span>
+    <span class="pill ver">v19 &middot; App 1.0.0(08)</span>
     <span class="pill sample">SAMPLE DATA</span>
     <div class="topright">
       <span class="clock" id="clock">--:--</span>
-      <button class="gear" onclick="go('settings')" title="Settings">&#9881;</button>
+      <button class="gear" onclick="go('settings')" title="Settings"><img src="icons/icon-gear.webp" alt="Settings"></button>
     </div>
   </div>
 
   <div class="body">
     <div class="side">
       <div class="cap">MENU</div>
-      <button data-tab="dashboard" class="active" onclick="go('dashboard')">Dashboard</button>
-      <button data-tab="staff" onclick="go('staff')">Staff</button>
-      <button data-tab="tl" onclick="go('tl')">TL Access</button>
-      <button data-tab="data" onclick="go('data')">Data</button>
-      <button data-tab="versions" onclick="go('versions')">Versions</button>
-      <button data-tab="premium" onclick="go('premium')">Premium Requests</button>
-      <button data-tab="settings" onclick="go('settings')">Settings</button>
+      <button data-tab="dashboard" class="active" onclick="go('dashboard')"><img src="icons/icon-home.webp" alt="">Dashboard</button>
+      <button data-tab="staff" onclick="go('staff')"><img src="icons/icon-staff.webp" alt="">Staff</button>
+      <button data-tab="tl" onclick="go('tl')"><img src="icons/icon-key.webp" alt="">TL Access</button>
+      <button data-tab="data" onclick="go('data')"><img src="icons/icon-data.webp" alt="">Data</button>
+      <button data-tab="versions" onclick="go('versions')"><img src="icons/icon-versions.webp" alt="">Versions</button>
+      <button data-tab="premium" onclick="go('premium')"><img src="icons/icon-premium.webp" alt="">Premium Requests</button>
+      <button data-tab="settings" onclick="go('settings')"><img src="icons/icon-gear.webp" alt="">Settings</button>
     </div>
 
     <div class="main">
@@ -181,18 +193,18 @@
           </div>
         </div>
         <div class="alerts">
-          <span class="alert-chip" onclick="go('data')">⚠ 3 stations — Opening pending</span>
-          <span class="alert-chip" onclick="go('data')">⚠ 6 stations — Closing pending</span>
-          <span class="alert-chip" onclick="go('staff')">⚠ 2 staff — absent (sample)</span>
+          <span class="alert-chip" onclick="go('data')"><img src="icons/icon-alert.webp" alt="">3 stations — Opening pending</span>
+          <span class="alert-chip" onclick="go('data')"><img src="icons/icon-alert.webp" alt="">6 stations — Closing pending</span>
+          <span class="alert-chip" onclick="go('staff')"><img src="icons/icon-alert.webp" alt="">2 staff — absent (sample)</span>
         </div>
         <div class="secttl">Categories — sab kuch yahan se</div>
         <div class="hub">
-          <div class="hub-card" onclick="go('staff')"><div class="ic">👥</div><div class="t">Staff</div><div class="s">Roster + versions</div><span class="bdg green">120</span></div>
-          <div class="hub-card" onclick="go('tl')"><div class="ic">🔑</div><div class="t">TL Access</div><div class="s">TL logins</div><span class="bdg green">3</span></div>
-          <div class="hub-card" onclick="go('data')"><div class="ic">📊</div><div class="t">Data</div><div class="s">Opening / Closing / Complaints</div></div>
-          <div class="hub-card" onclick="go('versions')"><div class="ic">📱</div><div class="t">Versions</div><div class="s">Kis par konsi version</div><span class="bdg green">3</span></div>
-          <div class="hub-card" onclick="go('premium')"><div class="ic">⭐</div><div class="t">Premium Requests</div><div class="s">Approve yahan se</div><span class="bdg">0</span></div>
-          <div class="hub-card" onclick="go('settings')"><div class="ic">⚙️</div><div class="t">Settings</div><div class="s">Login, update, app</div></div>
+          <div class="hub-card g-purple" onclick="go('staff')"><div class="t">Staff</div><div class="s">Roster + versions</div><span class="bdg green">120</span><div class="hub-ic"><img src="icons/icon-staff.webp" alt=""></div></div>
+          <div class="hub-card g-blue" onclick="go('tl')"><div class="t">TL Access</div><div class="s">TL logins</div><span class="bdg green">3</span><div class="hub-ic"><img src="icons/icon-key.webp" alt=""></div></div>
+          <div class="hub-card g-teal" onclick="go('data')"><div class="t">Data</div><div class="s">Opening / Closing / Complaints</div><div class="hub-ic"><img src="icons/icon-data.webp" alt=""></div></div>
+          <div class="hub-card g-pink" onclick="go('versions')"><div class="t">Versions</div><div class="s">Kis par konsi version</div><span class="bdg green">3</span><div class="hub-ic"><img src="icons/icon-versions.webp" alt=""></div></div>
+          <div class="hub-card g-green" onclick="go('premium')"><div class="t">Premium Requests</div><div class="s">Approve yahan se</div><span class="bdg">0</span><div class="hub-ic"><img src="icons/icon-premium.webp" alt=""></div></div>
+          <div class="hub-card g-deep" onclick="go('settings')"><div class="t">Settings</div><div class="s">Login, update, app</div><div class="hub-ic"><img src="icons/icon-gear.webp" alt=""></div></div>
         </div>
         <div class="secttl">Stations — aaj (sample)</div>
         <div class="station-grid">
@@ -228,7 +240,7 @@
             <li><span class="tm">07:10</span><span class="dot"></span><span>Shaheed-e-Millat &mdash; Attendance 5/5</span></li>
             <li><span class="tm">13:20</span><span class="dot"></span><span>Faizabad &mdash; Closing pending</span></li>
             <li><span class="tm">18:05</span><span class="dot"></span><span>PIMS &mdash; Card claims 3 (Rs 390)</span></li>
-            <li><span class="tm">19:30</span><span class="dot"></span><span>Metro+ Admin v1.0.0(07) &mdash; update live</span></li>
+            <li><span class="tm">19:30</span><span class="dot"></span><span>Metro+ Admin v1.0.0(08) &mdash; update live</span></li>
           </ul>
         </div>
       </div>
@@ -379,13 +391,13 @@
           <h3>About</h3>
           <div class="rowline"><span>App</span><span>Metro + Admin</span></div>
           <div class="rowline"><span>Package</span><span class="mono">com.metroplusadmin</span></div>
-          <div class="rowline"><span>Panel</span><span>v18 &middot; Metro+ Admin v1.0.0(07)</span></div>
+          <div class="rowline"><span>Panel</span><span>v19 &middot; Metro+ Admin v1.0.0(08)</span></div>
         </div>
         <p class="sub" id="settingsNote" style="display:none">Ye tab sirf app ke andar kaam karta hai — browser preview me naam/password nahi badal sakte.</p>
       </div>
     </div>
   </div>
-  <p class="foot">SAMPLE DATA — andar ke numbers asal data nahi hain. Asal Firebase (native_ collections) wiring Phase 2 me hogi. Metro+ Admin v1.0.0(07) &middot; Panel v18</p>
+  <p class="foot">SAMPLE DATA — andar ke numbers asal data nahi hain. Asal Firebase (native_ collections) wiring Phase 2 me hogi. Metro+ Admin v1.0.0(08) &middot; Panel v19</p>
 </div>
 <script>
   function go(tab) {
@@ -411,7 +423,7 @@
     } else {
       note.style.display = 'block';
       document.getElementById('adminCurrentName').textContent = 'Aryan';
-      document.getElementById('appVersion').textContent = '1.0.0(07)';
+      document.getElementById('appVersion').textContent = '1.0.0(08)';
     }
   }
 
