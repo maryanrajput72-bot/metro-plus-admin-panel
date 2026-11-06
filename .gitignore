@@ -1,0 +1,9 @@
+# Signing material — NEVER on GitHub. Sirf is machine par, workspace me mehfooz.
+*.jks
+*.keystore
+keystore.properties
+local.properties
+build/
+.gradle/
+apk/
+*.apk

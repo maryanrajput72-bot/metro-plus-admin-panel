@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Metro+ Admin</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --brand: #0F766E; --brand2: #14B8A6; --brandDark: #0B3D2E;
+    --ok: #15803D; --okBg: #DCFCE7; --warn: #B45309; --warnBg: #FEF3C7;
+    --ink: #111827; --muted: #6B7280;
+    --surface: #FFFFFF; --surface2: #F3F4F6;
+    --border: #E5E7EB; --bg: #F4F6F8;
+  }
+  body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; background: var(--bg); color: var(--ink); font-size: 14px; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 10px; }
+  /* Top bar */
+  .topbar { background: linear-gradient(135deg, #0F766E 0%, #14B8A6 100%); color: #fff; border-radius: 16px; padding: 16px 18px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .logo { width: 44px; height: 44px; border-radius: 12px; }
+  .topbar h1 { font-size: 19px; font-weight: 800; letter-spacing: -.2px; }
+  .topbar p { font-size: 12px; opacity: .92; margin-top: 2px; }
+  .pill { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; white-space: nowrap; }
+  .pill.ver { background: rgba(255,255,255,.2); border: 1px solid rgba(255,255,255,.45); color: #fff; }
+  .pill.sample { background: #F59E0B; color: #fff; margin-left: auto; }
+  /* Body layout */
+  .body { display: flex; gap: 14px; margin-top: 14px; align-items: flex-start; }
+  .side { width: 190px; flex-shrink: 0; background: linear-gradient(180deg, #0B3D2E, #0F766E); border-radius: 16px; padding: 10px; position: sticky; top: 0; }
+  .side button { display: block; width: 100%; text-align: left; background: transparent; border: 0; color: rgba(255,255,255,.82); font-size: 13.5px; font-weight: 600; padding: 10px 12px; border-radius: 10px; cursor: pointer; margin-bottom: 2px; }
+  .side button:hover { background: rgba(255,255,255,.1); color: #fff; }
+  .side button.active { background: rgba(255,255,255,.18); color: #fff; }
+  .side .cap { color: rgba(255,255,255,.55); font-size: 10.5px; font-weight: 700; letter-spacing: 1.2px; padding: 10px 12px 5px; }
+  .main { flex: 1; min-width: 0; }
+  .tab { display: none; }
+  .tab.show { display: block; }
+  h2 { font-size: 17px; font-weight: 800; margin-bottom: 2px; }
+  .sub { color: var(--muted); font-size: 12.5px; margin-bottom: 14px; }
+  .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 13px 14px; }
+  .card .k { font-size: 11px; font-weight: 700; color: var(--muted); letter-spacing: .4px; text-transform: uppercase; }
+  .card .v { font-size: 23px; font-weight: 800; margin-top: 4px; }
+  .card .v small { font-size: 13px; color: var(--muted); font-weight: 600; }
+  .card .d { font-size: 11.5px; color: var(--muted); margin-top: 3px; }
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 14px; }
+  .panel h3 { font-size: 14px; font-weight: 800; margin-bottom: 10px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .4px; color: var(--muted); padding: 7px 8px; border-bottom: 1px solid var(--border); }
+  td { padding: 8px; border-bottom: 1px solid var(--border); }
+  tr:last-child td { border-bottom: 0; }
+  .st { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 20px; white-space: nowrap; }
+  .st.done { background: var(--okBg); color: var(--ok); }
+  .st.pend { background: var(--warnBg); color: var(--warn); }
+  .mono { font-variant-numeric: tabular-nums; }
+  .chiprow { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  .chip { font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border); background: var(--surface2); color: var(--ink); cursor: pointer; }
+  .chip.on { background: var(--brand); border-color: var(--brand); color: #fff; }
+  .foot { font-size: 12px; color: var(--muted); text-align: center; padding: 6px 0 2px; }
+  .rowline { display: flex; justify-content: space-between; gap: 10px; padding: 9px 2px; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .rowline:last-child { border-bottom: 0; }
+  .empty { text-align: center; padding: 26px 12px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+  .empty b { color: var(--ink); }
+  @media (max-width: 640px) {
+    .body { flex-direction: column; }
+    .side { width: 100%; position: static; display: flex; flex-wrap: wrap; gap: 2px; }
+    .side .cap { display: none; }
+    .side button { width: auto; flex: 1 1 auto; text-align: center; }
+    .cards { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <img class="logo" src="logo-green.png" alt="Metro+ Admin logo">
+    <div>
+      <h1>Metro+ Admin Panel</h1>
+      <p>24 stations &middot; Native app data &middot; Fri 06 Nov 2026</p>
+    </div>
+    <span class="pill ver">v18 &middot; App 1.0.0(01)</span>
+    <span class="pill sample">SAMPLE DATA</span>
+  </div>
+
+  <div class="body">
+    <div class="side">
+      <div class="cap">MENU</div>
+      <button data-tab="dashboard" class="active" onclick="go('dashboard')">Dashboard</button>
+      <button data-tab="staff" onclick="go('staff')">Staff</button>
+      <button data-tab="tl" onclick="go('tl')">TL Access</button>
+      <button data-tab="data" onclick="go('data')">Data</button>
+      <button data-tab="versions" onclick="go('versions')">Versions</button>
+      <button data-tab="premium" onclick="go('premium')">Premium Requests</button>
+    </div>
+
+    <div class="main">
+      <!-- DASHBOARD -->
+      <div class="tab show" id="tab-dashboard">
+        <h2>Dashboard</h2>
+        <p class="sub">Aaj ki halat — saari stations, ek nazar me (sample)</p>
+        <div class="cards">
+          <div class="card"><div class="k">Stations</div><div class="v">24</div><div class="d">Saddar &ndash; Pak Secretariat</div></div>
+          <div class="card"><div class="k">Opening done</div><div class="v">21<small>/24</small></div><div class="d">3 pending</div></div>
+          <div class="card"><div class="k">Closing done</div><div class="v">18<small>/24</small></div><div class="d">6 pending</div></div>
+          <div class="card"><div class="k">Attendance</div><div class="v">118<small>/120</small></div><div class="d">2 absent (sample)</div></div>
+        </div>
+        <div class="panel">
+          <h3>Stations — aaj (sample)</h3>
+          <table>
+            <tr><th>Station</th><th>No.</th><th>Opening</th><th>Closing</th><th>Attendance</th></tr>
+            <tr><td>Saddar</td><td class="mono">201</td><td><span class="st done">Done</span></td><td><span class="st done">Done</span></td><td class="mono">5/5</td></tr>
+            <tr><td>Marrir Chowk</td><td class="mono">202</td><td><span class="st done">Done</span></td><td><span class="st done">Done</span></td><td class="mono">5/5</td></tr>
+            <tr><td>Liaqat Bagh</td><td class="mono">203</td><td><span class="st done">Done</span></td><td><span class="st done">Done</span></td><td class="mono">4/5</td></tr>
+            <tr><td>Committee Chowk</td><td class="mono">204</td><td><span class="st done">Done</span></td><td><span class="st done">Done</span></td><td class="mono">5/5</td></tr>
+            <tr><td>Waris Khan</td><td class="mono">205</td><td><span class="st done">Done</span></td><td><span class="st done">Done</span></td><td class="mono">5/5</td></tr>
+            <tr><td>Chandni Chowk</td><td class="mono">206</td><td><span class="st done">Done</span></td><td><span class="st pend">Pending</span></td><td class="mono">5/5</td></tr>
+            <tr><td>Rehmanabad</td><td class="mono">207</td><td><span class="st done">Done</span></td><td><span class="st done">Done</span></td><td class="mono">4/5</td></tr>
+            <tr><td>6th Road</td><td class="mono">208</td><td><span class="st done">Done</span></td><td><span class="st done">Done</span></td><td class="mono">5/5</td></tr>
+            <tr><td>Khatam-e-Nabuwat</td><td class="mono">209</td><td><span class="st done">Done</span></td><td><span class="st done">Done</span></td><td class="mono">5/5</td></tr>
+            <tr><td>Faizabad</td><td class="mono">210</td><td><span class="st done">Done</span></td><td><span class="st pend">Pending</span></td><td class="mono">5/5</td></tr>
+            <tr><td>IJP</td><td class="mono">211</td><td><span class="st done">Done</span></td><td><span class="st done">Done</span></td><td class="mono">5/5</td></tr>
+            <tr><td>Potohar</td><td class="mono">212</td><td><span class="st done">Done</span></td><td><span class="st done">Done</span></td><td class="mono">5/5</td></tr>
+            <tr><td>Khayaban-e-Johar</td><td class="mono">213</td><td><span class="st done">Done</span></td><td><span class="st done">Done</span></td><td class="mono">5/5</td></tr>
+            <tr><td>Faiz Ahmed Faiz</td><td class="mono">214</td><td><span class="st done">Done</span></td><td><span class="st done">Done</span></td><td class="mono">5/5</td></tr>
+            <tr><td>Kashmir Highway</td><td class="mono">215</td><td><span class="st done">Done</span></td><td><span class="st pend">Pending</span></td><td class="mono">4/5</td></tr>
+            <tr><td>Chaman</td><td class="mono">216</td><td><span class="st done">Done</span></td><td><span class="st done">Done</span></td><td class="mono">5/5</td></tr>
+            <tr><td>Ibn-e-Sina</td><td class="mono">217</td><td><span class="st done">Done</span></td><td><span class="st done">Done</span></td><td class="mono">5/5</td></tr>
+            <tr><td>Kachehry</td><td class="mono">218</td><td><span class="st done">Done</span></td><td><span class="st done">Done</span></td><td class="mono">5/5</td></tr>
+            <tr><td>PIMS</td><td class="mono">219</td><td><span class="st done">Done</span></td><td><span class="st pend">Pending</span></td><td class="mono">5/5</td></tr>
+            <tr><td>Stock Exchange</td><td class="mono">220</td><td><span class="st done">Done</span></td><td><span class="st done">Done</span></td><td class="mono">5/5</td></tr>
+            <tr><td>7th Avenue</td><td class="mono">221</td><td><span class="st done">Done</span></td><td><span class="st done">Done</span></td><td class="mono">5/5</td></tr>
+            <tr><td>Shaheed-e-Millat</td><td class="mono">222</td><td><span class="st done">Done</span></td><td><span class="st done">Done</span></td><td class="mono">5/5</td></tr>
+            <tr><td>Parade Ground</td><td class="mono">223</td><td><span class="st done">Done</span></td><td><span class="st pend">Pending</span></td><td class="mono">5/5</td></tr>
+            <tr><td>Pak Secretariat</td><td class="mono">224</td><td><span class="st done">Done</span></td><td><span class="st done">Done</span></td><td class="mono">5/5</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- STAFF -->
+      <div class="tab" id="tab-staff">
+        <h2>Staff</h2>
+        <p class="sub">Roster aur installed version — station chun ke dekho (sample)</p>
+        <div class="chiprow">
+          <span class="chip on">Shaheed-e-Millat</span>
+          <span class="chip">Saddar</span>
+          <span class="chip">Faizabad</span>
+          <span class="chip">Pak Secretariat</span>
+        </div>
+        <div class="panel">
+          <h3>Shaheed-e-Millat &middot; Evening shift (sample)</h3>
+          <table>
+            <tr><th>Name</th><th>ID</th><th>Status</th><th>App version</th></tr>
+            <tr><td>Ahsan</td><td class="mono">1994</td><td><span class="st done">On Duty</span></td><td class="mono">2.0.2(24)</td></tr>
+            <tr><td>Shahid</td><td class="mono">2884</td><td><span class="st done">On Duty</span></td><td class="mono">2.0.2(24)</td></tr>
+            <tr><td>Usman</td><td class="mono">3212</td><td><span class="st done">On Duty</span></td><td class="mono">2.0.2(23)</td></tr>
+            <tr><td>Shehryar</td><td class="mono">3552</td><td><span class="st done">On Duty</span></td><td class="mono">2.0.2(24)</td></tr>
+            <tr><td>Tahir</td><td class="mono">2022</td><td><span class="st pend">Leave</span></td><td class="mono">2.0.2(24)</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- TL ACCESS -->
+      <div class="tab" id="tab-tl">
+        <h2>TL Access</h2>
+        <p class="sub">TL login — Gmail + 5-digit password (sample, masked)</p>
+        <div class="panel">
+          <h3>Team Leaders (sample)</h3>
+          <table>
+            <tr><th>TL</th><th>Station</th><th>Gmail</th><th>Password</th><th>Status</th></tr>
+            <tr><td>TL — Shaheed-e-Millat</td><td>Shaheed-e-Millat</td><td>&bull;&bull;&bull;@gmail.com</td><td class="mono">&bull;&bull;&bull;&bull;&bull;</td><td><span class="st done">Active</span></td></tr>
+            <tr><td>TL — Saddar</td><td>Saddar</td><td>&bull;&bull;&bull;@gmail.com</td><td class="mono">&bull;&bull;&bull;&bull;&bull;</td><td><span class="st done">Active</span></td></tr>
+            <tr><td>TL — Faizabad</td><td>Faizabad</td><td>&bull;&bull;&bull;@gmail.com</td><td class="mono">&bull;&bull;&bull;&bull;&bull;</td><td><span class="st pend">Off</span></td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- DATA -->
+      <div class="tab" id="tab-data">
+        <h2>Data</h2>
+        <p class="sub">Station + shift chun ke aaj ka data dekho (sample)</p>
+        <div class="chiprow">
+          <span class="chip on">Shaheed-e-Millat</span>
+          <span class="chip">Saddar</span>
+          <span class="chip on">Evening</span>
+          <span class="chip">Morning</span>
+        </div>
+        <div class="cards">
+          <div class="card"><div class="k">Opening</div><div class="v">Rs 12,400</div><div class="d">TOM 1 &middot; sample</div></div>
+          <div class="card"><div class="k">Closing</div><div class="v">Rs 18,900</div><div class="d">TOM 1 &middot; sample</div></div>
+          <div class="card"><div class="k">Card sale</div><div class="v">42<small> cards</small></div><div class="d">Rs 30/card &middot; sample</div></div>
+          <div class="card"><div class="k">Card claims</div><div class="v">3</div><div class="d">Rs 390 &middot; sample</div></div>
+        </div>
+        <div class="panel">
+          <h3>Complaints — aaj (sample)</h3>
+          <div class="rowline"><span><b>TOM</b> — Machine 2, card jam</span><span class="st pend">Open</span></div>
+          <div class="rowline"><span><b>PIS</b> — PIS01, display off</span><span class="st done">Done</span></div>
+        </div>
+        <div class="panel">
+          <h3>Leave / Overtime — aaj (sample)</h3>
+          <div class="rowline"><span><b>Tahir</b> — Leave, full day</span><span class="st pend">Leave</span></div>
+        </div>
+      </div>
+
+      <!-- VERSIONS -->
+      <div class="tab" id="tab-versions">
+        <h2>Versions</h2>
+        <p class="sub">Kaunsi version kahan installed hai (sample)</p>
+        <div class="panel">
+          <h3>App versions (sample)</h3>
+          <table>
+            <tr><th>Version</th><th>Installed</th><th>Channel</th></tr>
+            <tr><td class="mono">2.0.2(24)</td><td class="mono">112 staff</td><td><span class="st done">Latest</span></td></tr>
+            <tr><td class="mono">2.0.2(23)</td><td class="mono">6 staff</td><td><span class="st pend">Old</span></td></tr>
+            <tr><td class="mono">2.0.2(22)</td><td class="mono">2 staff</td><td><span class="st pend">Old</span></td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- PREMIUM REQUESTS -->
+      <div class="tab" id="tab-premium">
+        <h2>Premium Requests</h2>
+        <p class="sub">TL ki premium requests yahan aayengi — tum Approve karo ge to uska premium khul jayega</p>
+        <div class="panel">
+          <div class="empty"><b>Abhi koi premium request nahi aayi.</b><br>
+          Metro+ app me Premium Request bhejne ka button abhi sirf dikhawa hai —<br>
+          jab uska asal logic banega, TL ki request yahan aayegi aur tum yahin se Approve kar sako ge.<br>
+          Approval sirf tum kar sako ge — TL khud ko approve nahi kar sakta.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="foot">SAMPLE DATA — andar ke numbers asal data nahi hain. Asal Firebase (native_ collections) wiring Phase 2 me hogi. Metro+ Admin v1.0.0(01) &middot; Panel v18</p>
+</div>
+<script>
+  function go(tab) {
+    document.querySelectorAll('.tab').forEach(function (el) { el.classList.remove('show'); });
+    var t = document.getElementById('tab-' + tab);
+    if (t) t.classList.add('show');
+    document.querySelectorAll('.side button').forEach(function (b) {
+      b.classList.toggle('active', b.getAttribute('data-tab') === tab);
+    });
+  }
+</script>
+</body>
+</html>
