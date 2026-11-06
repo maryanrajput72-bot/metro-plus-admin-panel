@@ -15,8 +15,8 @@ android {
         minSdk = 24
         targetSdk = 34
         // Version scheme: version(build) — ek version me build 01 se 100 tak.
-        versionCode = 5
-        versionName = "1.0.0(05)"
+        versionCode = 6
+        versionName = "1.0.0(06)"
     }
 
     signingConfigs {

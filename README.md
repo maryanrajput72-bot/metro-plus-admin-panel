@@ -1,7 +1,7 @@
 # Metro + Admin
 
 Admin panel app — **Metro+** staff app ka admin panel, Android app ke andar.
-Naam: **Metro + Admin** · Package: **com.metroplusadmin** · Current version: **1.0.0(05)** (versionCode 5)
+Naam: **Metro + Admin** · Package: **com.metroplusadmin** · Current version: **1.0.0(06)** (versionCode 6)
 
 ## Logo
 
@@ -29,6 +29,17 @@ ko hue-shift karke banaye gaye).
 - `keystore/` + `keystore.properties` — **GitHub par KABHI nahi** (`.gitignore`).
   Sirf is machine par. Ye key Metro+ staff app wali key se ALAG hai, taake
   Admin app staff app ke upar install na ho.
+
+## Updater diagnose (v1.0.0(06))
+
+- (04) se (05) andar se nahi aayi thi, kuch dikha bhi nahi tha — is liye check ab
+  **nazar aata hai**: khulte hi "Update check ho raha hai…" toast; nayi na ho to
+  "Koi nayi update nahi hai"; fail ho to wajah ke saath toast + 20 second baad
+  ek retry.
+- **Fallback:** version.json (raw.githubusercontent.com) na khule to GitHub API
+  `releases/latest` se tag + APK asset URL leta hai.
+- **Manual check:** Settings tab > App > "Abhi update check karo" button
+  (JS bridge `AdminSettings.checkUpdateNow()`).
 
 ## Splash 5s + logo adjust + home hero + update progress (v1.0.0(05))
 

@@ -53,31 +53,84 @@ object UpdateCheck {
         context: Context,
         onUpdate: (versionName: String, apkUrl: String) -> Unit,
         onNoUpdate: () -> Unit = {},
-        onError: () -> Unit = {}
+        onError: (reason: String) -> Unit = {}
     ) {
         Thread {
-            try {
-                val url = "$MANIFEST_URL?t=${System.currentTimeMillis()}"
-                val conn = URL(url).openConnection() as HttpURLConnection
-                conn.connectTimeout = 10_000
-                conn.readTimeout = 10_000
-                if (conn.responseCode != HttpURLConnection.HTTP_OK) {
-                    mainHandler.post { onError() }; return@Thread
-                }
-                val text = conn.inputStream.bufferedReader().use { it.readText() }
-                val json = JSONObject(text)
-                val remoteCode = json.optInt("versionCode", 0)
-                val apkUrl = json.optString("apkUrl", "")
-                val versionName = json.optString("versionName", "")
+            // Pehle version.json (raw.githubusercontent.com) — na mile to
+            // GitHub API releases/latest (alag host — ek band ho to doosra chale).
+            val rawResult = tryFetchManifest()
+            if (rawResult != null) {
+                val (remoteCode, apkUrl, versionName) = rawResult
                 if (remoteCode <= BuildConfig.VERSION_CODE || apkUrl.isBlank()) {
                     mainHandler.post { onNoUpdate() }
                 } else {
                     mainHandler.post { onUpdate(versionName, apkUrl) }
                 }
-            } catch (_: Exception) {
-                mainHandler.post { onError() }
+                return@Thread
             }
+            val apiResult = tryFetchLatestRelease()
+            if (apiResult != null) {
+                val (remoteCode, apkUrl, versionName) = apiResult
+                if (remoteCode <= BuildConfig.VERSION_CODE || apkUrl.isBlank()) {
+                    mainHandler.post { onNoUpdate() }
+                } else {
+                    mainHandler.post { onUpdate(versionName, apkUrl) }
+                }
+                return@Thread
+            }
+            mainHandler.post { onError("manifest + GitHub API dono nahi khule (net/raw host)") }
         }.start()
+    }
+
+    // version.json parho → (versionCode, apkUrl, versionName) ya null.
+    private fun tryFetchManifest(): Triple<Int, String, String>? {
+        return try {
+            val url = "$MANIFEST_URL?t=${System.currentTimeMillis()}"
+            val conn = URL(url).openConnection() as HttpURLConnection
+            conn.connectTimeout = 10_000
+            conn.readTimeout = 10_000
+            if (conn.responseCode != HttpURLConnection.HTTP_OK) return null
+            val text = conn.inputStream.bufferedReader().use { it.readText() }
+            val json = JSONObject(text)
+            Triple(
+                json.optInt("versionCode", 0),
+                json.optString("apkUrl", ""),
+                json.optString("versionName", "")
+            )
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    // GitHub API: latest release → tag "v1.0.0-06" se code 6, APK asset ka URL.
+    private fun tryFetchLatestRelease(): Triple<Int, String, String>? {
+        return try {
+            val url = "https://api.github.com/repos/maryanrajput72-bot/metro-plus-admin-panel/releases/latest"
+            val conn = URL(url).openConnection() as HttpURLConnection
+            conn.connectTimeout = 10_000
+            conn.readTimeout = 10_000
+            conn.setRequestProperty("Accept", "application/vnd.github+json")
+            if (conn.responseCode != HttpURLConnection.HTTP_OK) return null
+            val text = conn.inputStream.bufferedReader().use { it.readText() }
+            val json = JSONObject(text)
+            val tag = json.optString("tag_name", "")
+            val buildNum = tag.substringAfterLast("-", "").toIntOrNull() ?: return null
+            val versionName = tag.removePrefix("v").substringBeforeLast("-") + "(${"%02d".format(buildNum)})"
+            var apkUrl = ""
+            val assets = json.optJSONArray("assets")
+            if (assets != null) {
+                for (i in 0 until assets.length()) {
+                    val name = assets.getJSONObject(i).optString("name", "")
+                    if (name.endsWith(".apk")) {
+                        apkUrl = assets.getJSONObject(i).optString("browser_download_url", "")
+                        break
+                    }
+                }
+            }
+            Triple(buildNum, apkUrl, versionName)
+        } catch (_: Exception) {
+            null
+        }
     }
 
     fun downloadUpdate(

@@ -102,10 +102,19 @@ class MainActivity : Activity() {
     private fun mb(bytes: Long): String =
         String.format("%.1f MB", bytes / 1024f / 1024f)
 
+    private var updateRetries = 0
+
+    // Settings tab ke "Abhi update check karo" button se bhi yehi chalta hai.
+    fun runUpdateCheckNow() {
+        runUpdateCheck()
+    }
+
     private fun runUpdateCheck() {
+        Toast.makeText(this, "Update check ho raha hai…", Toast.LENGTH_SHORT).show()
         UpdateCheck.checkForUpdate(
             context = this,
             onUpdate = { versionName, apkUrl ->
+                updateRetries = 0
                 showUpdateProgress(versionName)
                 UpdateCheck.downloadUpdate(
                     context = this,
@@ -144,6 +153,23 @@ class MainActivity : Activity() {
                         ).show()
                     }
                 )
+            },
+            onNoUpdate = {
+                Toast.makeText(this, "Koi nayi update nahi hai", Toast.LENGTH_SHORT).show()
+            },
+            onError = { reason ->
+                Toast.makeText(
+                    this,
+                    "Update check fail: $reason",
+                    Toast.LENGTH_LONG
+                ).show()
+                // Ek dafa 20 second baad dobara try karo (net halka ho to).
+                if (updateRetries < 1) {
+                    updateRetries++
+                    Handler(Looper.getMainLooper()).postDelayed(
+                        { runUpdateCheck() }, 20_000L
+                    )
+                }
             }
         )
     }
@@ -162,7 +188,8 @@ class MainActivity : Activity() {
  * Password yahan kabhi plain save nahi hota: Auth sirf salt + SHA-256 hash
  * rakhta hai. Result: "ok" / "wrong_current" / "empty" / "short".
  */
-class SettingsBridge(private val context: Context) {
+class SettingsBridge(private val activity: MainActivity) {
+    private val context: Context get() = activity
 
     @JavascriptInterface
     fun getAdminName(): String {
@@ -177,5 +204,11 @@ class SettingsBridge(private val context: Context) {
     fun changeCredentials(currentPassword: String, newName: String, newPassword: String): String {
         val prefs = context.getSharedPreferences(Auth.PREFS, Context.MODE_PRIVATE)
         return Auth.changeCredentials(prefs, currentPassword, newName, newPassword)
+    }
+
+    @JavascriptInterface
+    fun checkUpdateNow() {
+        // JS bridge background thread par chalta hai — main par bhejo.
+        Handler(Looper.getMainLooper()).post { activity.runUpdateCheckNow() }
     }
 }

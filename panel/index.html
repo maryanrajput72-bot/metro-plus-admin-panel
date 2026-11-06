@@ -99,7 +99,7 @@
       <h1>Metro+ Admin Panel</h1>
       <p>24 stations &middot; Native app data &middot; Fri 06 Nov 2026</p>
     </div>
-    <span class="pill ver">v18 &middot; App 1.0.0(05)</span>
+    <span class="pill ver">v18 &middot; App 1.0.0(06)</span>
     <span class="pill sample">SAMPLE DATA</span>
   </div>
 
@@ -288,12 +288,15 @@
           <h3>App</h3>
           <div class="rowline"><span>Version</span><b class="mono" id="appVersion">&mdash;</b></div>
           <div class="rowline"><span>Update check</span><span>App khulte hi 5 second baad — nayi version ho to khud download + install</span></div>
+          <div style="height:12px"></div>
+          <button class="btn" onclick="checkUpdateNow()">Abhi update check karo</button>
+          <div class="msg" id="updateCheckMsg"></div>
         </div>
         <p class="sub" id="settingsNote" style="display:none">Ye tab sirf app ke andar kaam karta hai — browser preview me naam/password nahi badal sakte.</p>
       </div>
     </div>
   </div>
-  <p class="foot">SAMPLE DATA — andar ke numbers asal data nahi hain. Asal Firebase (native_ collections) wiring Phase 2 me hogi. Metro+ Admin v1.0.0(05) &middot; Panel v18</p>
+  <p class="foot">SAMPLE DATA — andar ke numbers asal data nahi hain. Asal Firebase (native_ collections) wiring Phase 2 me hogi. Metro+ Admin v1.0.0(06) &middot; Panel v18</p>
 </div>
 <script>
   function go(tab) {
@@ -319,6 +322,18 @@
       note.style.display = 'block';
       document.getElementById('adminCurrentName').textContent = 'Aryan';
       document.getElementById('appVersion').textContent = '1.0.0(04)';
+    }
+  }
+
+  function checkUpdateNow() {
+    var msg = document.getElementById('updateCheckMsg');
+    if (window.AdminSettings) {
+      msg.className = 'msg';
+      msg.textContent = 'Check ho raha hai — upar toast dekho.';
+      try { AdminSettings.checkUpdateNow(); } catch (e) { }
+    } else {
+      msg.className = 'msg err';
+      msg.textContent = 'Ye sirf app ke andar kaam karta hai.';
     }
   }
 
