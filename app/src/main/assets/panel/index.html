@@ -155,8 +155,8 @@
       <h1>Metro+ Admin Panel</h1>
       <p>24 stations &middot; Native app data &middot; Fri 06 Nov 2026</p>
     </div>
-    <span class="pill ver">v21 &middot; App 1.0.0(10)</span>
-    <span class="pill sample">SAMPLE DATA</span>
+    <span class="pill ver">v22 &middot; App 1.0.0(11)</span>
+    <span class="pill sample" id="livePill">CONNECTING…</span>
     <div class="topright">
       <span class="clock" id="clock">--:--</span>
       <button class="gear" onclick="go('settings')" title="Settings"><img src="icons/icon-gear.webp" alt="Settings"></button>
@@ -226,7 +226,7 @@
             <li><span class="tm">07:10</span><span class="dot"></span><span>Shaheed-e-Millat &mdash; Attendance 5/5</span></li>
             <li><span class="tm">13:20</span><span class="dot"></span><span>Faizabad &mdash; Closing pending</span></li>
             <li><span class="tm">18:05</span><span class="dot"></span><span>PIMS &mdash; Card claims 3 (Rs 390)</span></li>
-            <li><span class="tm">19:30</span><span class="dot"></span><span>Metro+ Admin v1.0.0(10) &mdash; update live</span></li>
+            <li><span class="tm">19:30</span><span class="dot"></span><span>Metro+ Admin v1.0.0(11) &mdash; update live</span></li>
           </ul>
         </div>
       </div>
@@ -236,21 +236,12 @@
         <div class="pagehead"><button class="back" onclick="closePage()" aria-label="Back">&lsaquo;</button><span class="pt">Staff</span></div>
         <h2>Staff</h2>
         <p class="sub">Roster aur installed version — station chun ke dekho (sample)</p>
-        <div class="chiprow">
-          <span class="chip on">Shaheed-e-Millat</span>
-          <span class="chip">Saddar</span>
-          <span class="chip">Faizabad</span>
-          <span class="chip">Pak Secretariat</span>
-        </div>
+        <div class="chiprow" id="staffChips"></div>
+        <div class="chiprow" id="staffShiftChips"></div>
         <div class="panel">
-          <h3>Shaheed-e-Millat &middot; Evening shift (sample)</h3>
-          <table>
-            <tr><th>Name</th><th>ID</th><th>Status</th><th>App version</th></tr>
-            <tr><td>Ahsan</td><td class="mono">1994</td><td><span class="st done">On Duty</span></td><td class="mono">2.0.2(24)</td></tr>
-            <tr><td>Shahid</td><td class="mono">2884</td><td><span class="st done">On Duty</span></td><td class="mono">2.0.2(24)</td></tr>
-            <tr><td>Usman</td><td class="mono">3212</td><td><span class="st done">On Duty</span></td><td class="mono">2.0.2(23)</td></tr>
-            <tr><td>Shehryar</td><td class="mono">3552</td><td><span class="st done">On Duty</span></td><td class="mono">2.0.2(24)</td></tr>
-            <tr><td>Tahir</td><td class="mono">2022</td><td><span class="st pend">Leave</span></td><td class="mono">2.0.2(24)</td></tr>
+          <h3 id="staffPanelTitle">Staff — live</h3>
+          <table id="staffTable">
+            <tr><th>Name</th><th>ID</th><th>Status</th><th>Time</th></tr>
           </table>
         </div>
       </div>
@@ -259,15 +250,10 @@
       <div class="tab page" id="tab-tl">
         <div class="pagehead"><button class="back" onclick="closePage()" aria-label="Back">&lsaquo;</button><span class="pt">TL Access</span></div>
         <h2>TL Access</h2>
-        <p class="sub">TL login — Gmail + 5-digit password (sample, masked)</p>
+        <p class="sub">TL login — Gmail + 5-digit password (live)</p>
         <div class="panel">
-          <h3>Team Leaders (sample)</h3>
-          <table>
-            <tr><th>TL</th><th>Station</th><th>Gmail</th><th>Password</th><th>Status</th></tr>
-            <tr><td>TL — Shaheed-e-Millat</td><td>Shaheed-e-Millat</td><td>&bull;&bull;&bull;@gmail.com</td><td class="mono">&bull;&bull;&bull;&bull;&bull;</td><td><span class="st done">Active</span></td></tr>
-            <tr><td>TL — Saddar</td><td>Saddar</td><td>&bull;&bull;&bull;@gmail.com</td><td class="mono">&bull;&bull;&bull;&bull;&bull;</td><td><span class="st done">Active</span></td></tr>
-            <tr><td>TL — Faizabad</td><td>Faizabad</td><td>&bull;&bull;&bull;@gmail.com</td><td class="mono">&bull;&bull;&bull;&bull;&bull;</td><td><span class="st pend">Off</span></td></tr>
-          </table>
+          <h3>Team Leaders</h3>
+          <p class="sub">Native app TL logins Firebase par abhi NAHI bhejta — is liye yahan kuch nahi dikh raha. Jab app bhejega, to yahi aayega.</p>
         </div>
       </div>
 
@@ -275,27 +261,19 @@
       <div class="tab page" id="tab-data">
         <div class="pagehead"><button class="back" onclick="closePage()" aria-label="Back">&lsaquo;</button><span class="pt">Data</span></div>
         <h2>Data</h2>
-        <p class="sub">Station + shift chun ke aaj ka data dekho (sample)</p>
-        <div class="chiprow">
-          <span class="chip on">Shaheed-e-Millat</span>
-          <span class="chip">Saddar</span>
-          <span class="chip on">Evening</span>
-          <span class="chip">Morning</span>
-        </div>
-        <div class="cards">
-          <div class="card"><div class="k">Opening</div><div class="v">Rs 12,400</div><div class="d">TOM 1 &middot; sample</div></div>
-          <div class="card"><div class="k">Closing</div><div class="v">Rs 18,900</div><div class="d">TOM 1 &middot; sample</div></div>
-          <div class="card"><div class="k">Card sale</div><div class="v">42<small> cards</small></div><div class="d">Rs 30/card &middot; sample</div></div>
-          <div class="card"><div class="k">Card claims</div><div class="v">3</div><div class="d">Rs 390 &middot; sample</div></div>
+        <p class="sub">Station + shift chun ke aaj ka LIVE data dekho (native app se)</p>
+        <div class="chiprow" id="dataChips"></div>
+        <div class="chiprow" id="dataShiftChips"></div>
+        <div class="cards" id="dataCards"></div>
+        <div class="panel">
+          <h3 id="dataAttTitle">Attendance — aaj (live)</h3>
+          <table id="dataAttTable">
+            <tr><th>Name</th><th>ID</th><th>Time</th><th>Status</th></tr>
+          </table>
         </div>
         <div class="panel">
-          <h3>Complaints — aaj (sample)</h3>
-          <div class="rowline"><span><b>TOM</b> — Machine 2, card jam</span><span class="st pend">Open</span></div>
-          <div class="rowline"><span><b>PIS</b> — PIS01, display off</span><span class="st done">Done</span></div>
-        </div>
-        <div class="panel">
-          <h3>Leave / Overtime — aaj (sample)</h3>
-          <div class="rowline"><span><b>Tahir</b> — Leave, full day</span><span class="st pend">Leave</span></div>
+          <h3>Complaints / Card claims / Leave — aaj</h3>
+          <p class="sub">Native app ye cheezein abhi Firebase par NAHI bhejta — is liye yahan kuch nahi dikh raha. Jab app bhejega, to yahi aayega.</p>
         </div>
       </div>
 
@@ -303,15 +281,10 @@
       <div class="tab page" id="tab-versions">
         <div class="pagehead"><button class="back" onclick="closePage()" aria-label="Back">&lsaquo;</button><span class="pt">Versions</span></div>
         <h2>Versions</h2>
-        <p class="sub">Kaunsi version kahan installed hai (sample)</p>
+        <p class="sub">Kaunsi version kahan installed hai (live)</p>
         <div class="panel">
-          <h3>App versions (sample)</h3>
-          <table>
-            <tr><th>Version</th><th>Installed</th><th>Channel</th></tr>
-            <tr><td class="mono">2.0.2(24)</td><td class="mono">112 staff</td><td><span class="st done">Latest</span></td></tr>
-            <tr><td class="mono">2.0.2(23)</td><td class="mono">6 staff</td><td><span class="st pend">Old</span></td></tr>
-            <tr><td class="mono">2.0.2(22)</td><td class="mono">2 staff</td><td><span class="st pend">Old</span></td></tr>
-          </table>
+          <h3>App versions</h3>
+          <p class="sub">Native app apni version Firebase par abhi NAHI bhejta — is liye yahan kuch nahi dikh raha. Jab app version bhejne lagega, to yahi aayega.</p>
         </div>
       </div>
 
@@ -375,21 +348,21 @@
         </div>
         <div class="panel">
           <h3>Data &amp; Backup</h3>
-          <div class="rowline"><span>Data source</span><span>SAMPLE DATA — design ke liye</span></div>
-          <div class="rowline"><span>Asal data</span><span>Firebase (native_ collections) — Phase 2 me wiring hogi</span></div>
+          <div class="rowline"><span>Data source</span><span id="srcLine">LIVE — Firebase metro-plus-5966d</span></div>
+          <div class="rowline"><span>Asal data</span><span>records collection, sirf native_ docs — realtime + cache</span></div>
           <div class="rowline"><span>Login data</span><span>Sirf is phone par save hota hai</span></div>
         </div>
         <div class="panel">
           <h3>About</h3>
           <div class="rowline"><span>App</span><span>Metro + Admin</span></div>
           <div class="rowline"><span>Package</span><span class="mono">com.metroplusadmin</span></div>
-          <div class="rowline"><span>Panel</span><span>v21 &middot; Metro+ Admin v1.0.0(10)</span></div>
+          <div class="rowline"><span>Panel</span><span>v22 &middot; Metro+ Admin v1.0.0(11)</span></div>
         </div>
         <p class="sub" id="settingsNote" style="display:none">Ye tab sirf app ke andar kaam karta hai — browser preview me naam/password nahi badal sakte.</p>
       </div>
     </div>
   </div>
-  <p class="foot">SAMPLE DATA — andar ke numbers asal data nahi hain. Asal Firebase (native_ collections) wiring Phase 2 me hogi. Metro+ Admin v1.0.0(10) &middot; Panel v21</p>
+  <p class="foot" id="liveFoot">Live data connect ho raha hai… Metro+ Admin v1.0.0(11) &middot; Panel v22</p>
 </div>
 <div class="dock">
   <button data-dock="data" onclick="go('data')"><img src="icons/icon-data.webp" alt=""><span>Data</span></button>
@@ -448,7 +421,7 @@
     } else {
       note.style.display = 'block';
       document.getElementById('adminCurrentName').textContent = 'Aryan';
-      document.getElementById('appVersion').textContent = '1.0.0(10)';
+      document.getElementById('appVersion').textContent = '1.0.0(11)';
     }
   }
 
@@ -517,5 +490,345 @@
     }
   }
 </script>
+
+  <script>
+  // ---------- LIVE DATA — Firebase (nayi native Metro app) ----------
+  // Project metro-plus-5966d, collection "records", SIRF native_ docs.
+  // Purani trial app ke docs (bina native_ prefix) kabhi nahi parhe jate.
+  // Web key public identifier hai (native app ke FirebaseSync.kt me bhi
+  // yahi hai); asal hifazat Firestore rules hain. Panel SIRF parhta hai,
+  // kuch likhta nahi. Net na ho to panel kharab nahi hota — OFFLINE
+  // dikhata hai aur khaali (imandaar) jagah chhod deta hai.
+  (function () {
+    var FB_CONFIG = {
+      apiKey: 'AIzaSyCYFYARldvFUPCJ2_w4l4L1_aUKNm_hpIw',
+      authDomain: 'metro-plus-5966d.firebaseapp.com',
+      projectId: 'metro-plus-5966d',
+      storageBucket: 'metro-plus-5966d.firebasestorage.app',
+      appId: '1:872006480655:web:a557d4c8d6f90f9f45c47a'
+    };
+    var SDK = 'https://www.gstatic.com/firebasejs/11.0.2/';
+    var liveDocs = {};          // docId -> fields (plain JS values)
+    var liveState = 'connecting'; // connecting | live | cache | offline
+    var lastUpdate = null;
+    var sel = { staffStation: 'Shaheed-e-Millat', staffShift: 'Evening', dataStation: 'Shaheed-e-Millat', dataShift: 'Evening' };
+    var STATIONS = [];          // {name, no} — station cards se parhi jati hai
+
+    function $(s) { return document.querySelector(s); }
+    function esc(s) { return ('' + (s == null ? '' : s)).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+    function slug(st) { return ('' + st).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''); }
+    function todayKey() {
+      try { return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Karachi', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date()); }
+      catch (e) { var d = new Date(); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
+    }
+    function nowTime() {
+      try { return new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Karachi', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).format(new Date()); }
+      catch (e) { return ''; }
+    }
+    function num(s) { var n = parseFloat(('' + (s == null ? '' : s)).trim()); return isNaN(n) ? 0 : n; }
+    function isNum(s) { return s != null && ('' + s).trim() !== '' && !isNaN(parseFloat(s)); }
+    function fmtRs(v) { var n = Math.round(v); var neg = n < 0; var d = Math.abs(n).toString().split('').reverse().join('').replace(/(\d{3})(?=\d)/g, '$1,').split('').reverse().join(''); return (neg ? '-' : '') + d; }
+    function machineSale(o, r, c) { if (!isNum(c)) return 0; return Math.max(0, (num(o) + num(r)) - num(c)); }
+
+    // TomRecord.encode() ka JS mirror (native app, TomRecord.kt).
+    // indices: 0 station, 1 shift, 2 dateKey, 5-8 BOP roll, 9-11 BOP card/
+    // slips/amount, 12-15 TOM roll, 16-19 TKM roll, 20-34 machines a-e
+    // (opening, recharge, closing), 35 openingSaved, 37 closingSaved,
+    // 43-52 machines cards/cardSale.
+    function decodeTom(enc) {
+      var p = ('' + (enc || '')).split(';');
+      if (p.length < 20) return null;
+      function at(i) { return i < p.length ? p[i] : ''; }
+      var machines = {};
+      ['a', 'b', 'c', 'd', 'e'].forEach(function (k, idx) {
+        var b = 20 + idx * 3, cb = 43 + idx * 2;
+        var m = { opening: at(b), recharge: at(b + 1), closing: at(b + 2), cards: at(cb), cardSale: at(cb + 1) };
+        if (m.opening || m.recharge || m.closing || m.cards || m.cardSale) machines[k] = m;
+      });
+      function rollHasOpen(r) { return r.opening || r.receive || r.distribute; }
+      var bop = { opening: at(5), receive: at(6), distribute: at(7), closing: at(8) };
+      var tom = { opening: at(12), receive: at(13), distribute: at(14), closing: at(15) };
+      var tkm = { opening: at(16), receive: at(17), distribute: at(18), closing: at(19) };
+      var hasOpen = !!(at(9) || at(10) || rollHasOpen(bop) || rollHasOpen(tom) || rollHasOpen(tkm) ||
+        Object.keys(machines).some(function (k) { return machines[k].opening || machines[k].cards; }));
+      var hasClose = !!(bop.closing || tom.closing || tkm.closing ||
+        Object.keys(machines).some(function (k) { return machines[k].closing || machines[k].cardSale; }));
+      var sale = num(at(10)) * 30, slips = num(at(10)), cardCount = 0;
+      Object.keys(machines).forEach(function (k) {
+        var m = machines[k];
+        var s = machineSale(m.opening, m.recharge, m.closing);
+        sale += s;
+        slips += Math.round(s / 30 * 10) / 10;
+        cardCount += num(m.cardSale);
+      });
+      return {
+        station: at(0), shift: at(1), dateKey: at(2),
+        bop: bop, tom: tom, tkm: tkm, machines: machines,
+        bopSaleSlips: at(10),
+        openingSaved: at(35) === '1', openingSavedAt: at(36),
+        closingSaved: at(37) === '1', closingSavedAt: at(38),
+        hasOpen: hasOpen, hasClose: hasClose,
+        saleRs: sale, slips: slips, cardCount: cardCount, cardRs: cardCount * 30
+      };
+    }
+
+    function docId(station, shift, date) { return 'native_' + slug(station) + '_' + shift + '_' + date; }
+    function dayDoc(station, shift, date) { return liveDocs[docId(station, shift, date)] || null; }
+    function rosterDoc(station, shift) { return liveDocs[docId(station, shift, '1970-01-01')] || null; }
+    function statusLabel(row) {
+      var s = (row.status || '').toLowerCase();
+      if (s === '') return 'Present';
+      if (s === 'leave') return 'Leave';
+      if (s === 'absent') return 'Absent';
+      if (s === 'off') return 'Off';
+      if (s === 'waiting') return 'Waiting';
+      return row.status;
+    }
+    function isPresent(row) { return (row.status || '') === ''; }
+
+    function setPill() {
+      var pill = $('#livePill');
+      if (!pill) return;
+      var map = { connecting: ['CONNECTING…', '#D97706'], live: ['LIVE DATA', '#15803D'], cache: ['CACHE', '#D97706'], offline: ['OFFLINE', '#64748B'] };
+      var m = map[liveState] || map.connecting;
+      pill.textContent = m[0];
+      pill.style.background = m[1];
+      pill.style.color = '#fff';
+    }
+    function setFoot() {
+      var f = $('#liveFoot');
+      if (!f) return;
+      var base = 'Metro+ Admin v1.0.0(11) · Panel v22';
+      if (liveState === 'live') f.textContent = 'LIVE DATA — Firebase metro-plus-5966d (records, sirf native_ docs) · aakhri update ' + (lastUpdate || '') + ' · ' + base;
+      else if (liveState === 'cache') f.textContent = 'CACHE se dikh raha hai — net aate hi live ho jayega · ' + base;
+      else if (liveState === 'offline') f.textContent = 'OFFLINE — live data nahi mila, dobara kholo ya net check karo · ' + base;
+      else f.textContent = 'Live data connect ho raha hai… · ' + base;
+    }
+
+    // Pehli paint se pehle hi saaf karo: koi sample number kabhi na dikhe.
+    function markConnecting() {
+      setPill(); setFoot();
+      var stats = document.querySelectorAll('#tab-dashboard .hero-stat');
+      if (stats.length >= 4) {
+        stats[1].querySelector('.v').innerHTML = '—<small>/24</small>';
+        stats[1].querySelector('.d').textContent = '…';
+        stats[2].querySelector('.v').innerHTML = '—<small>/24</small>';
+        stats[2].querySelector('.d').textContent = '…';
+        stats[3].querySelector('.v').innerHTML = '—<small>/—</small>';
+        stats[3].querySelector('.d').textContent = '…';
+      }
+      var al = $('.alerts');
+      if (al) al.innerHTML = '<span class="alert-chip">Live data load ho raha hai…</span>';
+      var grid = $('.station-grid');
+      if (grid) grid.querySelectorAll('.station-card .pill').forEach(function (p) { p.textContent = '—'; p.style.background = '#F1F5F9'; p.style.color = '#64748B'; });
+      var sc = $('#staffChips'); if (sc) sc.innerHTML = '';
+      var dc = $('#dataChips'); if (dc) dc.innerHTML = '';
+      var cards = $('#dataCards'); if (cards) cards.innerHTML = '';
+    }
+
+    function renderLive() {
+      setPill(); setFoot();
+      var today = todayKey();
+      var openDone = 0, closeDone = 0, present = 0, total = 0, absent = 0;
+      var alerts = [];
+      STATIONS.forEach(function (st) {
+        ['Morning', 'Evening'].forEach(function (sh) {
+          var d = dayDoc(st.name, sh, today);
+          if (!d) return;
+          var tom = d.tom ? decodeTom(d.tom) : null;
+          if (tom) { if (tom.hasOpen) openDone++; if (tom.hasClose) closeDone++; }
+          var rows = (d.staffDay && d.staffDay.rows) || [];
+          rows.forEach(function (r) {
+            total++;
+            if (isPresent(r)) present++;
+            else if ((r.status || '') === 'absent' || (r.status || '') === 'leave') absent++;
+          });
+          if (!tom || !tom.closingSaved) alerts.push({ t: st.name + ' — Closing pending', tab: 'data' });
+          else if (!tom.openingSaved) alerts.push({ t: st.name + ' — Opening pending', tab: 'data' });
+          rows.forEach(function (r) { if ((r.status || '') === 'absent') alerts.push({ t: r.name + ' — absent', tab: 'data' }); });
+        });
+      });
+      // Hero
+      var stats = document.querySelectorAll('#tab-dashboard .hero-stat');
+      if (stats.length >= 4) {
+        var rings = document.querySelectorAll('#tab-dashboard .hero-stat .ring circle:last-child');
+        function ring(i, pct) { if (rings[i]) rings[i].setAttribute('stroke-dasharray', (pct / 100 * 100.5).toFixed(1) + ' 100.5'); }
+        stats[1].querySelector('.v').innerHTML = openDone + '<small>/24</small>';
+        stats[1].querySelector('.d').textContent = (24 - openDone) + ' pending';
+        ring(0, openDone / 24 * 100);
+        stats[2].querySelector('.v').innerHTML = closeDone + '<small>/24</small>';
+        stats[2].querySelector('.d').textContent = (24 - closeDone) + ' pending';
+        ring(1, closeDone / 24 * 100);
+        stats[3].querySelector('.v').innerHTML = present + '<small>/' + total + '</small>';
+        stats[3].querySelector('.d').textContent = absent + ' absent';
+        ring(2, total ? present / total * 100 : 0);
+      }
+      // Alerts
+      var al = $('.alerts');
+      if (al) {
+        if (!alerts.length) al.innerHTML = '<span class="alert-chip" onclick="go(\'data\')">Aaj sab live — koi pending nahi</span>';
+        else al.innerHTML = alerts.slice(0, 6).map(function (a) {
+          return '<span class="alert-chip" onclick="go(\'' + a.tab + '\')">' + esc(a.t) + '</span>';
+        }).join('');
+      }
+      renderMatrix(today);
+      renderStaff(today);
+      renderData(today);
+    }
+
+    function renderMatrix(today) {
+      var grid = $('.station-grid');
+      if (!grid) return;
+      grid.innerHTML = STATIONS.map(function (st) {
+        var openOk = false, closeOk = false, pres = 0, tot = 0, any = false;
+        ['Morning', 'Evening'].forEach(function (sh) {
+          var d = dayDoc(st.name, sh, today);
+          if (!d) return;
+          any = true;
+          var tom = d.tom ? decodeTom(d.tom) : null;
+          if (tom) { if (tom.openingSaved) openOk = true; if (tom.closingSaved) closeOk = true; }
+          ((d.staffDay && d.staffDay.rows) || []).forEach(function (r) { tot++; if (isPresent(r)) pres++; });
+        });
+        function pill(txt, ok) {
+          return ok
+            ? '<span class="pill">' + txt + '</span>'
+            : '<span class="pill" style="background:#F1F5F9;color:#64748B">' + txt + '</span>';
+        }
+        var att = tot ? ('<span class="pill' + (pres === tot ? '' : ' amb') + '">' + pres + '/' + tot + ' present</span>') : '';
+        return '<div class="station-card" onclick="go(\'data\')">' +
+          '<div class="nm">' + esc(st.name) + '</div><div class="no">Station ' + esc(st.no) + '</div><div class="pills">' +
+          pill(openOk ? 'Opening ✓' : 'Opening —', openOk) +
+          pill(closeOk ? 'Closing ✓' : 'Closing —', closeOk) + att +
+          '</div>' + (any ? '' : '<div class="no">Live data nahi aaya</div>') + '</div>';
+      }).join('');
+    }
+
+    function chipsHTML(list, current, fn) {
+      return list.map(function (n) {
+        return '<span class="chip' + (n === current ? ' on' : '') + '" onclick="' + fn + '(\'' + n.replace(/'/g, "\\'") + '\')">' + esc(n) + '</span>';
+      }).join('');
+    }
+    function renderStaff(today) {
+      var sc = $('#staffChips');
+      if (sc) sc.innerHTML = chipsHTML(STATIONS.map(function (s) { return s.name; }), sel.staffStation, 'pickStaffStation');
+      var ssc = $('#staffShiftChips');
+      if (ssc) ssc.innerHTML = chipsHTML(['Evening', 'Morning'], sel.staffShift, 'pickStaffShift');
+      var title = $('#staffPanelTitle');
+      if (title) title.textContent = sel.staffStation + ' · ' + sel.staffShift + ' shift (live)';
+      var tbl = $('#staffTable');
+      if (!tbl) return;
+      var roster = rosterDoc(sel.staffStation, sel.staffShift);
+      var rows = '';
+      if (!roster || !roster.staff || !roster.staff.length) {
+        rows = '<tr><td colspan="4">Is station/shift ka roster native app se abhi nahi aaya.</td></tr>';
+      } else {
+        var day = dayDoc(sel.staffStation, sel.staffShift, today);
+        var byId = {};
+        ((day && day.staffDay && day.staffDay.rows) || []).forEach(function (r) { byId[r.id] = r; });
+        rows = roster.staff.map(function (m) {
+          var r = byId[m.id];
+          var st = r ? statusLabel(r) : '—';
+          var tm = r ? (r.time || '—') : '—';
+          var cls = r && isPresent(r) ? 'done' : 'pend';
+          return '<tr><td>' + esc(m.name) + '</td><td class="mono">' + esc(m.id) + '</td><td><span class="st ' + cls + '">' + esc(st) + '</span></td><td class="mono">' + esc(tm) + '</td></tr>';
+        }).join('');
+      }
+      tbl.innerHTML = '<tr><th>Name</th><th>ID</th><th>Status</th><th>Time</th></tr>' + rows;
+    }
+
+    function renderData(today) {
+      var dc = $('#dataChips');
+      if (dc) dc.innerHTML = chipsHTML(STATIONS.map(function (s) { return s.name; }), sel.dataStation, 'pickDataStation');
+      var dsc = $('#dataShiftChips');
+      if (dsc) dsc.innerHTML = chipsHTML(['Evening', 'Morning'], sel.dataShift, 'pickDataShift');
+      var cards = $('#dataCards');
+      var day = dayDoc(sel.dataStation, sel.dataShift, today);
+      var tom = day && day.tom ? decodeTom(day.tom) : null;
+      if (cards) {
+        if (!tom) {
+          cards.innerHTML =
+            '<div class="card"><div class="k">Opening</div><div class="v">—</div><div class="d">Aaj ka TOM abhi nahi aaya</div></div>' +
+            '<div class="card"><div class="k">Closing</div><div class="v">—</div><div class="d">Aaj ka TOM abhi nahi aaya</div></div>' +
+            '<div class="card"><div class="k">Sale</div><div class="v">—</div><div class="d">Aaj ka TOM abhi nahi aaya</div></div>' +
+            '<div class="card"><div class="k">Card sale</div><div class="v">—</div><div class="d">Aaj ka TOM abhi nahi aaya</div></div>';
+        } else {
+          cards.innerHTML =
+            '<div class="card"><div class="k">Opening</div><div class="v">' + (tom.openingSaved ? 'Saved ✓' : 'Not saved') + '</div><div class="d">' + esc(tom.openingSavedAt || '—') + '</div></div>' +
+            '<div class="card"><div class="k">Closing</div><div class="v">' + (tom.closingSaved ? 'Saved ✓' : 'Not saved') + '</div><div class="d">' + esc(tom.closingSavedAt || '—') + '</div></div>' +
+            '<div class="card"><div class="k">Sale</div><div class="v">Rs ' + fmtRs(tom.saleRs) + '</div><div class="d">' + tom.slips + ' slips</div></div>' +
+            '<div class="card"><div class="k">Card sale</div><div class="v">' + tom.cardCount + '<small> cards</small></div><div class="d">Rs ' + fmtRs(tom.cardRs) + ' · Rs 30/card</div></div>';
+        }
+      }
+      var title = $('#dataAttTitle');
+      if (title) title.textContent = 'Attendance — aaj (' + sel.dataStation + ' · ' + sel.dataShift + ', live)';
+      var tbl = $('#dataAttTable');
+      if (tbl) {
+        var rows = ((day && day.staffDay && day.staffDay.rows) || []).map(function (r) {
+          var cls = isPresent(r) ? 'done' : 'pend';
+          return '<tr><td>' + esc(r.name) + '</td><td class="mono">' + esc(r.id) + '</td><td class="mono">' + esc(r.time || '—') + '</td><td><span class="st ' + cls + '">' + esc(statusLabel(r)) + '</span></td></tr>';
+        }).join('');
+        tbl.innerHTML = '<tr><th>Name</th><th>ID</th><th>Time</th><th>Status</th></tr>' +
+          (rows || '<tr><td colspan="4">Aaj ki haazri native app se abhi nahi aayi.</td></tr>');
+      }
+    }
+
+    window.pickStaffStation = function (n) { sel.staffStation = n; renderStaff(todayKey()); };
+    window.pickStaffShift = function (s) { sel.staffShift = s; renderStaff(todayKey()); };
+    window.pickDataStation = function (n) { sel.dataStation = n; renderData(todayKey()); };
+    window.pickDataShift = function (s) { sel.dataShift = s; renderData(todayKey()); };
+
+    function loadScript(src) {
+      return new Promise(function (res, rej) {
+        var s = document.createElement('script');
+        s.src = src; s.onload = res; s.onerror = rej;
+        document.head.appendChild(s);
+      });
+    }
+    function setOffline() { liveState = 'offline'; setPill(); setFoot(); renderLive(); }
+    function startLive() {
+      try {
+        var fb = window.firebase;
+        if (!fb.apps || !fb.apps.length) fb.initializeApp(FB_CONFIG);
+        var db = fb.firestore();
+        try { var pr = db.enablePersistence({ synchronizeTabs: false }); if (pr && pr.catch) pr.catch(function () {}); } catch (e) { /* cache nahi to bhi live chalega */ }
+        var auth = fb.auth();
+        auth.onAuthStateChanged(function (u) {
+          if (!u) return;
+          try {
+            db.collection('records')
+              .orderBy(fb.firestore.FieldPath.documentId())
+              .startAt('native_').endAt('native_')
+              .onSnapshot({ includeMetadataChanges: true }, function (snap) {
+                liveDocs = {};
+                snap.forEach(function (doc) { liveDocs[doc.id] = doc.data(); });
+                lastUpdate = nowTime();
+                liveState = snap.metadata.fromCache ? 'cache' : 'live';
+                renderLive();
+              }, function () { setOffline(); });
+          } catch (e) { setOffline(); }
+        });
+        auth.signInAnonymously().catch(function () { setOffline(); });
+        setTimeout(function () { if (liveState === 'connecting') setOffline(); }, 25000);
+      } catch (e) { setOffline(); }
+    }
+
+    // Stations DOM se parho (24 cards), phir pehli paint se pehle blank karo.
+    document.querySelectorAll('.station-card').forEach(function (c) {
+      var nm = c.querySelector('.nm'), no = c.querySelector('.no');
+      if (nm) STATIONS.push({ name: nm.textContent.trim(), no: no ? no.textContent.replace(/[^0-9]/g, '') : '' });
+    });
+    markConnecting();
+    renderStaff(todayKey());
+    renderData(todayKey());
+    (async function () {
+      try {
+        await loadScript(SDK + 'firebase-app-compat.js');
+        await loadScript(SDK + 'firebase-auth-compat.js');
+        await loadScript(SDK + 'firebase-firestore-compat.js');
+        startLive();
+      } catch (e) { setOffline(); }
+    })();
+  })();
+  </script>
 </body>
 </html>

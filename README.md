@@ -1,7 +1,7 @@
 # Metro + Admin
 
 Admin panel app — **Metro+** staff app ka admin panel, Android app ke andar.
-Naam: **Metro + Admin** · Package: **com.metroplusadmin** · Current version: **1.0.0(10)** (versionCode 10)
+Naam: **Metro + Admin** · Package: **com.metroplusadmin** · Current version: **1.0.0(11)** (versionCode 11)
 
 ## Logo
 
@@ -12,7 +12,7 @@ ko hue-shift karke banaye gaye).
 
 ## Structure — har file mehfooz hai
 
-- `panel/` — v21 admin panel website (HTML + CSS + JS, `index.html` + `logo-green.png` + `icons/`).
+- `panel/` — v22 admin panel website (HTML + CSS + JS, `index.html` + `logo-green.png` + `icons/`).
   Browser me bhi chalti hai, GitHub Pages par bhi.
 - `app/` — Android app (Kotlin, WebView). Panel app ke andar bundled hai:
   `app/src/main/assets/panel/index.html` — **wahi file jo `panel/` me hai**,
@@ -29,6 +29,42 @@ ko hue-shift karke banaye gaye).
 - `keystore/` + `keystore.properties` — **GitHub par KABHI nahi** (`.gitignore`).
   Sirf is machine par. Ye key Metro+ staff app wali key se ALAG hai, taake
   Admin app staff app ke upar install na ho.
+
+## Firebase LIVE (v1.0.0(11)) — nayi native Metro app ka Firebase
+
+Zabii ka order (2026-11-06 ~21:20 PKT): nayi native Metro app wala Firebase
+admin panel se connect karo — **purani trial app wala NAHI**; jitna abhi
+saved hai wo connect karo; admin panel me cheez FAST aaye; app se jo update
+ho wo yahan show ho.
+
+- **Project:** `metro-plus-5966d`, collection **`records`**, query sirf
+  **`native_*` doc IDs** par (`orderBy __name__`, `startAt 'native_'`).
+  Purani app ke docs (bina prefix) is query me kabhi nahi aate — REST +
+  SDK dono se verify kiya.
+- **Auth:** anonymous sign-in (native app jaisa, `FirebaseSync.kt`).
+  Panel SIRF parhta hai, kuch likhta nahi.
+- **Fast:** Firebase JS SDK (compat 11.0.2, gstatic CDN) + IndexedDB
+  persistence (cache-first: panel khulte hi cache se dikhata hai) +
+  `onSnapshot` realtime listener — Metro app me save hote hi panel
+  update hota hai. Upar pill batata hai: LIVE DATA / CACHE / OFFLINE.
+- **Abhi live kya hai (2026-11-06 ko check kiya — 6 native_ docs):**
+  Shaheed-e-Millat, Morning + Evening — roster (5 + 6 staff) aur day docs
+  2026-11-05 + 2026-11-06 (haazri rows + 05-Evening ka TOM record,
+  sale Rs 60 / 2 slips — decode verify kiya). Hero, alerts, station
+  matrix, Staff tab (roster + aaj ki haazri), Data tab (TOM decode:
+  Opening/Closing saved, Sale Rs, Card sale) — sab LIVE.
+- **Abhi live NAHI (imandaar khaali jagah, koi sample nahi):** Versions,
+  TL Access, Premium Requests, Complaints, Card claims, Leave — native
+  app ye Firebase par abhi NAHI bhejta (`FirebaseSync.kt` me sirf
+  roster/day/TOM/POS hai). Jab native app bhejega, to yahi aayega.
+- **Offline:** net na ho ya Firebase na mile to panel OFFLINE dikhata
+  hai, kharab nahi hota. Web key public identifier hai (native source
+  me bhi yahi hai); asal hifazat Firestore rules hain.
+- **Verify:** panel JS `node --check` OK; `decodeTom` asal 05-Evening
+  TOM string par verify (sale Rs 60, slips 2); panel wali query Node
+  me SDK se chalayi — 6 native_ docs mile, purani app ka ek bhi nahi.
+  (Is VM ka headless Chrome net nahi pakarta — is liye live render
+  phone par check karna hai.)
 
 ## Square category boxes + English hero (v1.0.0(10))
 
